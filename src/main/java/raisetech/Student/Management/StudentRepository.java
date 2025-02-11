@@ -12,6 +12,10 @@ public interface StudentRepository {
   @Select("SELECT * FROM student WHERE name = #{name}")
   Student searchByName(String name);
 
+//  @Select("SELECT * FROM student")
+//  List<Student> getAllStudents();
+
+
   @Insert("INSERT INTO student(name, age) VALUES(#{name}, #{age})") // 🔹 カラム名を明示
   void registerStudent(String name, int age);
 
