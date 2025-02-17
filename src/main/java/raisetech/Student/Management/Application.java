@@ -1,5 +1,6 @@
 package raisetech.Student.Management;
 
+import java.util.List; // ✅ List をインポート
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -35,6 +36,7 @@ public class Application {
 	public void registerStudent(@RequestParam String name, @RequestParam int age) {
 		repository.registerStudent(name, age);
 	}
+
 
 	@PatchMapping("/update")
 	public void updateStudent(@RequestParam String name, @RequestParam int age) {
