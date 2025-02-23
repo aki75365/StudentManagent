@@ -14,7 +14,6 @@ public class Application {
 
 	private String name = "Enami Kouji";
 	private String age = "37";
-	private int test = 0;
 
 	public static void main(String[] args) {
 		//localhost:8080
