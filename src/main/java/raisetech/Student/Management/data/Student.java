@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 public class Student {
 
   private String id;
-  private String name;
-  private String kanaName;
+  private String full_name;  // full_nameに変更
+  private String furigana;    // furiganaに変更
   private String nickname;
   private String email;
-  private String area;
+  private String city;         // cityに変更
   private int age;
-  private String sex;
+  private String gender;        // genderに変更
 }
