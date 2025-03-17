@@ -22,6 +22,11 @@ public class StudentService {
     return repository.searchAllStudents();
   }
 
+  // 受講生のコース情報を取得するメソッド
+  public List<StudentCourse> getStudentCourseList() {
+    return repository.findAllStudentCourses();
+  }
+
   // 30代の受講生を取得するメソッド
   public List<Student> findStudentsInTheir30s() {
     return repository.findStudentsInTheir30s();

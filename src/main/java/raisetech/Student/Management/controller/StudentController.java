@@ -2,43 +2,44 @@ package raisetech.Student.Management.controller;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import raisetech.Student.Management.controller.converter.StudentConverter;
 import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
+import raisetech.Student.Management.domain.StudentDetail;
 import raisetech.Student.Management.service.StudentService;
 
-@RestController
+@RestController // 修正: @RestController → @Controller
 public class StudentController {
 
-  private final StudentService service;
+  private StudentService service;
+  private StudentConverter converter;
 
   @Autowired
-  public StudentController(StudentService service) {
+  public StudentController(StudentService service, StudentConverter converter) {
     this.service = service;
+    this.converter = converter;
   }
 
-  // 全受講生リストを取得するエンドポイント
+  // 受講生リスト + コース情報を取得してビューに渡す
   @GetMapping("/studentList")
-  public List<Student> searchgetStudentList() {
-    return service.searchgetStudentList();
+  public String getStudentList(Model model) {
+    List<Student> students = service.searchgetStudentList();
+    List<StudentCourse> studentCourses = service.getStudentCourseList();
+    List<StudentDetail> studentDetails = converter.convertStudentDetails(students, studentCourses);
+
+    model.addAttribute("students", studentDetails); // Model にデータを追加
+    return "studentList"; // `studentList.html` のビューを返す
   }
 
-  // 全受講生リストを取得するエンドポイント
-  @GetMapping("/student_course")
-  public List<Student> getStudent_course() {
-    return service.searchgetStudentList();
-  }
-
-  // 30代の受講生を取得するエンドポイント
-  @GetMapping("/students/30s")
-  public List<Student> getStudentsInTheir30s() {
-    return service.findStudentsInTheir30s();
-  }
-
-  // JAVAコースの受講生を取得するエンドポイント
-  @GetMapping("/students/java-courses")
-  public List<StudentCourse> getJavaCourses() {
-    return service.findJavaCourses();
+  // 受講生リストを取得してビューに渡す
+  @GetMapping("/students")
+  public String getStudentCourse(Model model) {
+    List<Student> students = service.searchgetStudentList();
+    model.addAttribute("students", students);
+    return "student_course"; // `student_course.html` のビューを返す
   }
 }
