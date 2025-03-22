@@ -43,10 +43,6 @@ public interface StudentRepository {
    * 全受講生のコース情報を取得します。
    * @return 全受講生とそのコース情報の一覧
    */
-  @Select("""
-      SELECT s.id AS studentId, s.full_name, c.course_name, c.start_date, c.end_date
-      FROM students s
-      JOIN student_course c ON s.id = c.student_id
-  """)
+  @Select("select * from student_course")
   List<StudentCourse> findAllStudentCourses();
 }

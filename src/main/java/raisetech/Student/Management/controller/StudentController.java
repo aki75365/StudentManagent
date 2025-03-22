@@ -12,7 +12,7 @@ import raisetech.Student.Management.data.StudentCourse;
 import raisetech.Student.Management.domain.StudentDetail;
 import raisetech.Student.Management.service.StudentService;
 
-@RestController // 修正: @RestController → @Controller
+@Controller // 修正: @RestController → @Controller
 public class StudentController {
 
   private StudentService service;
@@ -31,7 +31,7 @@ public class StudentController {
     List<StudentCourse> studentCourses = service.getStudentCourseList();
     List<StudentDetail> studentDetails = converter.convertStudentDetails(students, studentCourses);
 
-    model.addAttribute("students", studentDetails); // Model にデータを追加
+    model.addAttribute("studentList", studentDetails); // Model にデータを追加
     return "studentList"; // `studentList.html` のビューを返す
   }
 

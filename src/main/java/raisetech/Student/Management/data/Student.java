@@ -8,7 +8,7 @@ import lombok.Setter;
 public class Student {
 
   private int id;
-  private String full_name;  // データベースと一致
+  private String fullName;  // データベースと一致
   private String furigana;
   private String nickname;
   private String email;
