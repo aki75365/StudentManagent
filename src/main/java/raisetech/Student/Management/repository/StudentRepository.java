@@ -1,6 +1,7 @@
 package raisetech.Student.Management.repository;
 
 import java.util.List;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import raisetech.Student.Management.data.Student;
@@ -8,7 +9,6 @@ import raisetech.Student.Management.data.StudentCourse;
 
 /**
  * 受講生情報を扱うリポジトリ
- *
  */
 @Mapper
 public interface StudentRepository {
@@ -43,6 +43,18 @@ public interface StudentRepository {
    * 全受講生のコース情報を取得します。
    * @return 全受講生とそのコース情報の一覧
    */
-  @Select("select * from student_course")
+  @Select("SELECT * FROM student_course")
   List<StudentCourse> findAllStudentCourses();
+
+  /**
+   * 新しい受講生を登録します。
+   * @param student 追加する受講生情報
+   */
+  @Insert("""
+    INSERT INTO students (full_name, furigana, nickname, email, city, age, gender, remarks, deleted_flag)
+    VALUES (#{fullName}, #{furigana}, #{nickname}, #{email}, #{city}, #{age}, #{gender}, #{remarks}, false)
+""")
+
+  void insertStudent(Student student); // StudentDetail ではなく Student を受け取る
+
 }

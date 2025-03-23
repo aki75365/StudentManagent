@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
+import raisetech.Student.Management.domain.StudentDetail;
 import raisetech.Student.Management.repository.StudentRepository;
 
 @Service
@@ -35,5 +36,14 @@ public class StudentService {
   // JAVAコースの受講生を取得するメソッド
   public List<StudentCourse> findJavaCourses() {
     return repository.findJavaCourses();
+  }
+
+  // 受講生を登録するメソッド（StudentDetailのまま）
+  public void registerStudent(StudentDetail studentDetail) {
+    if (studentDetail.getStudent() != null) {
+      repository.insertStudent(studentDetail.getStudent());
+    } else {
+      throw new IllegalArgumentException("StudentDetail に Student オブジェクトが含まれていません");
+    }
   }
 }

@@ -4,42 +4,79 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import raisetech.Student.Management.controller.converter.StudentConverter;
 import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
 import raisetech.Student.Management.domain.StudentDetail;
 import raisetech.Student.Management.service.StudentService;
 
-@Controller // 修正: @RestController → @Controller
+@Controller
 public class StudentController {
 
+  @Autowired
   private StudentService service;
-  private StudentConverter converter;
 
   @Autowired
-  public StudentController(StudentService service, StudentConverter converter) {
-    this.service = service;
-    this.converter = converter;
-  }
+  private StudentConverter converter;
 
-  // 受講生リスト + コース情報を取得してビューに渡す
   @GetMapping("/studentList")
   public String getStudentList(Model model) {
     List<Student> students = service.searchgetStudentList();
     List<StudentCourse> studentCourses = service.getStudentCourseList();
     List<StudentDetail> studentDetails = converter.convertStudentDetails(students, studentCourses);
 
-    model.addAttribute("studentList", studentDetails); // Model にデータを追加
-    return "studentList"; // `studentList.html` のビューを返す
+    model.addAttribute("studentList", studentDetails);
+    return "studentList";
   }
 
-  // 受講生リストを取得してビューに渡す
   @GetMapping("/students")
   public String getStudentCourse(Model model) {
     List<Student> students = service.searchgetStudentList();
     model.addAttribute("students", students);
-    return "student_course"; // `student_course.html` のビューを返す
+    return "student_course";
   }
+
+  @GetMapping("/newStudent")
+  public String newStudent(Model model) {
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudent(new Student()); // Student インスタンスを初期化
+    model.addAttribute("studentDetail", studentDetail);
+    return "registerStudent";
+  }
+  @PostMapping("/registerStudent")
+  public String registerStudent(@ModelAttribute("studentDetail") StudentDetail studentDetail, BindingResult result) {
+    if (result.hasErrors()) {
+      return "registerStudent";
+    }
+
+    // Student オブジェクトを取得
+    Student student = studentDetail.getStudent();
+    if (student == null) {
+      // student が null の場合、新しい Student インスタンスを作成
+      student = new Student();
+      studentDetail.setStudent(student);
+    }
+
+    // デバッグ用ログ出力
+    System.out.println("登録情報: ");
+    System.out.println("fullName = " + student.getFullName());
+    System.out.println("furigana = " + student.getFurigana());
+    System.out.println("nickname = " + student.getNickname());
+    System.out.println("email = " + student.getEmail());
+    System.out.println("city = " + student.getCity());
+    System.out.println("age = " + student.getAge());
+    System.out.println("gender = " + student.getGender());
+    System.out.println("remarks = " + student.getRemarks());
+    System.out.println("deletedFlag = " + student.isDeletedFlag());
+
+    // Student を service に渡す
+    service.registerStudent(studentDetail);
+
+    return "redirect:/studentList";
+  }
+
 }
