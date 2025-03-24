@@ -5,34 +5,37 @@
   <title>受講生情報一覧</title>
 </head>
 <body>
-<h1>受講生情報一覧<h1>
-  <table border="1">
-    <thead>
-    <tr>
-      <th>ID</th>
-      <th>fullName</th>
-      <th>furigana</th>
-      <th>nickname</th>
-      <th>email</th>
-      <th>city</th>
-      <th>int age</th>
-      <th>gender</th>
-      <th>deletedFlag</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="studentDetail : ${studentList}">
-      <td th:text="${studentDetail.student.id}">1</td>
-      <td th:text="${studentDetail.student.fullName}">山田五郎</td>
-      <td th:text="${studentDetail.student.furigana}">ヤマダゴロウ</td>
-      <td th:text="${studentDetail.student.nickname}">ゴロー</td>
-      <td th:text="${studentDetail.student.email}">goro@example.com</td>
-      <td th:text="${studentDetail.student.city}">東京</td>
-      <td th:text="${studentDetail.student.age}">20</td>
-      <td th:text="${studentDetail.student.gender}">男性</td>
-      <td th:text="${studentDetail.student.deletedFlag}">特になし</td>
+<h1>受講生情報一覧</h1>
+<table border="1">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>fullName</th>
+    <th>furigana</th>
+    <th>nickname</th>
+    <th>email</th>
+    <th>city</th>
+    <th>age</th>
+    <th>gender</th>
+    <th>deletedFlag</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="studentDetail : ${studentList}">
+    <td th:text="${studentDetail.student.id}">1</td>
+    <td>
+      <a th:href="@{/studentDetail/{id}(id=${studentDetail.student.id})}"
+         th:text="${studentDetail.student.fullName}">山田五郎</a>
     </td>
-    </tbody>
-  </table>
+    <td th:text="${studentDetail.student.furigana}">ヤマダゴロウ</td>
+    <td th:text="${studentDetail.student.nickname}">ゴロー</td>
+    <td th:text="${studentDetail.student.email}">goro@example.com</td>
+    <td th:text="${studentDetail.student.city}">東京</td>
+    <td th:text="${studentDetail.student.age}">20</td>
+    <td th:text="${studentDetail.student.gender}">男性</td>
+    <td th:text="${studentDetail.student.deletedFlag}">特になし</td>
+  </tr>
+  </tbody>
+</table>
 </body>
 </html>

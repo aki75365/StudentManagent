@@ -5,6 +5,7 @@ import lombok.Setter;
 import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -12,10 +13,16 @@ import java.util.List;
 public class StudentDetail {
 
   private Student student;
-  private List<StudentCourse> studentCourseList;
+  private List<StudentCourse> studentCourseList = new ArrayList<>(); // **明示的に初期化**
   private boolean deletedFlag; // 削除フラグを追加
 
-  // 名前のゲッターを定義
+  // **デフォルトコンストラクタ**
+  public StudentDetail() {
+    this.student = new Student();
+    this.studentCourseList.add(new StudentCourse()); // **空のコース情報を追加**
+  }
+
+  // 名前のゲッター
   public String getFullName() {
     return student != null ? student.getFullName() : null;
   }
@@ -52,3 +59,4 @@ public class StudentDetail {
     return student != null && student.isDeletedFlag();
   }
 }
+
