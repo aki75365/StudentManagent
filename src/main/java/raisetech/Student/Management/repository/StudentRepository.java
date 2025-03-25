@@ -53,8 +53,14 @@ public interface StudentRepository {
   @Insert("""
     INSERT INTO students (full_name, furigana, nickname, email, city, age, gender, remarks, deleted_flag)
     VALUES (#{fullName}, #{furigana}, #{nickname}, #{email}, #{city}, #{age}, #{gender}, #{remarks}, false)
-""")
+  """)
+  void insertStudent(Student student);
 
-  void insertStudent(Student student); // StudentDetail ではなく Student を受け取る
-
+  /**
+   * 受講生IDを指定して受講生情報を取得します。
+   * @param id 受講生ID
+   * @return 指定されたIDの受講生情報
+   */
+  @Select("SELECT * FROM students WHERE id = #{id}")
+  Student findStudentById(int id);
 }

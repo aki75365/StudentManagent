@@ -40,6 +40,17 @@
     <label for="remarks">備考:</label>
     <input type="text" id="remarks" th:field="*{student.remarks}"/>
   </div>
+
+  <!-- 受講コース情報 -->
+  <h2>受講コース情報</h2>
+  <div th:each="course, stat : *{studentCourseList}">
+    <label for="courseId">コースID:</label>
+    <input type="number" th:field="*{studentCourseList[__${stat.index}__].id}" required/>
+
+    <label for="courseName">コース名:</label>
+    <input type="text" th:field="*{studentCourseList[__${stat.index}__].courseName}" required/>
+  </div>
+
   <div>
     <button type="submit">登録</button>
   </div>
