@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>受講生詳細情報</title>
+</head>
+<body>
+<h1>受講生詳細情報</h1>
+
+<table border="1">
+  <tr>
+    <th>ID</th>
+    <td th:text="${studentDetail.student.id}"></td>
+  </tr>
+  <tr>
+    <th>氏名</th>
+    <td th:text="${studentDetail.student.fullName}"></td>
+  </tr>
+  <tr>
+    <th>フリガナ</th>
+    <td th:text="${studentDetail.student.furigana}"></td>
+  </tr>
+  <tr>
+    <th>ニックネーム</th>
+    <td th:text="${studentDetail.student.nickname}"></td>
+  </tr>
+  <tr>
+    <th>Email</th>
+    <td th:text="${studentDetail.student.email}"></td>
+  </tr>
+  <tr>
+    <th>住所</th>
+    <td th:text="${studentDetail.student.city}"></td>
+  </tr>
+  <tr>
+    <th>年齢</th>
+    <td th:text="${studentDetail.student.age}"></td>
+  </tr>
+  <tr>
+    <th>性別</th>
+    <td th:text="${studentDetail.student.gender}"></td>
+  </tr>
+  <tr>
+    <th>削除フラグ</th>
+    <td th:text="${studentDetail.student.deletedFlag}"></td>
+  </tr>
+</table>
+
+<h2>受講コース</h2>
+<table border="1">
+  <thead>
+  <tr>
+    <th>コースID</th>
+    <th>コース名</th>
+    <th>開始日</th>
+    <th>終了予定日</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="course : ${studentDetail.studentCourseList}">
+    <td th:text="${course.id}"></td>
+    <td th:text="${course.courseName}"></td>
+    <td th:text="${course.startDate}"></td>
+    <td th:text="${course.endDate}"></td>
+  </tr>
+  </tbody>
+</table>
+
+<a href="/studentList">戻る</a>
+</body>
+</html>
