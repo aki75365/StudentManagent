@@ -1,5 +1,6 @@
 package raisetech.Student.Management.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -7,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import raisetech.Student.Management.controller.converter.StudentConverter;
 import raisetech.Student.Management.data.Student;
@@ -43,10 +45,17 @@ public class StudentController {
   @GetMapping("/newStudent")
   public String newStudent(Model model) {
     StudentDetail studentDetail = new StudentDetail();
-    studentDetail.setStudent(new Student()); // Student インスタンスを初期化
+    studentDetail.setStudent(new Student());
+
+    // studentCourseList を初期化し、最低1件のデータを入れる
+    List<StudentCourse> studentCourses = new ArrayList<>();
+    studentCourses.add(new StudentCourse(0, 0, "", "", ""));
+    studentDetail.setStudentCourseList(studentCourses);
+
     model.addAttribute("studentDetail", studentDetail);
     return "registerStudent";
   }
+
   @PostMapping("/registerStudent")
   public String registerStudent(@ModelAttribute("studentDetail") StudentDetail studentDetail, BindingResult result) {
     if (result.hasErrors()) {
@@ -79,4 +88,13 @@ public class StudentController {
     return "redirect:/studentList";
   }
 
+  // **受講生の詳細情報を表示するエンドポイントを追加**
+  @GetMapping("/studentDetail/{id}")
+  public String getStudentDetail(@PathVariable("id") int id, Model model) {
+    StudentDetail studentDetail = service.getStudentDetailById(id);
+    model.addAttribute("studentDetail", studentDetail);
+    return "studentDetail";
+  }
 }
+
+
