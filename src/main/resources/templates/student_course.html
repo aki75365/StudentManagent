@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>受講生コース情報</title>
+</head>
+<body>
+<h1>受講生のコース情報</h1>
+
+<table>
+  <thead>
+  <tr>
+    <th>コース名</th>
+    <th>受講開始日</th>
+    <th>受講終了予定日</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="student : ${students}">
+    <td th:text="${student.courseName}"></td>
+    <td th:text="${student.startDate}"></td>
+    <td th:text="${student.endDate}"></td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>

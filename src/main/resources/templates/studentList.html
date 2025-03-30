@@ -6,36 +6,35 @@
 </head>
 <body>
 <h1>受講生情報一覧</h1>
+
 <table border="1">
   <thead>
   <tr>
     <th>ID</th>
-    <th>fullName</th>
-    <th>furigana</th>
-    <th>nickname</th>
-    <th>email</th>
-    <th>city</th>
-    <th>age</th>
-    <th>gender</th>
-    <th>deletedFlag</th>
+    <th>名前</th>
+    <th>フリガナ</th>
+    <th>ニックネーム</th>
+    <th>メールアドレス</th>
+    <th>住んでる地域</th>
+    <th>年齢</th>
+    <th>性別</th>
+    <th>削除フラグ</th>
   </tr>
   </thead>
   <tbody>
-  <tr th:each="studentDetail : ${studentList}">
-    <td th:text="${studentDetail.student.id}">1</td>
-    <td>
-      <a th:href="@{/studentDetail/{id}(id=${studentDetail.student.id})}"
-         th:text="${studentDetail.student.fullName}">山田五郎</a>
-    </td>
-    <td th:text="${studentDetail.student.furigana}">ヤマダゴロウ</td>
-    <td th:text="${studentDetail.student.nickname}">ゴロー</td>
-    <td th:text="${studentDetail.student.email}">goro@example.com</td>
-    <td th:text="${studentDetail.student.city}">東京</td>
-    <td th:text="${studentDetail.student.age}">20</td>
-    <td th:text="${studentDetail.student.gender}">男性</td>
-    <td th:text="${studentDetail.student.deletedFlag}">特になし</td>
+  <tr th:each="student : ${studentList}">
+    <td th:text="${student.student.id}"></td>
+    <td><a th:href="@{/studentDetail/{id}(id=${student.student.id})}" th:text="${student.student.fullName}"></a></td>
+    <td th:text="${student.student.furigana}"></td>
+    <td th:text="${student.student.nickname}"></td>
+    <td th:text="${student.student.email}"></td>
+    <td th:text="${student.student.city}"></td>
+    <td th:text="${student.student.age}"></td>
+    <td th:text="${student.student.gender}"></td>
+    <td th:text="${student.student.deletedFlag}"></td>
   </tr>
   </tbody>
 </table>
 </body>
 </html>
+

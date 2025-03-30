@@ -4,6 +4,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
 
@@ -63,4 +64,45 @@ public interface StudentRepository {
    */
   @Select("SELECT * FROM students WHERE id = #{id}")
   Student findStudentById(int id);
+
+  /**
+   * 受講生情報を更新します。
+   * @param student 更新する受講生情報
+   */
+  @Update("""
+    UPDATE students
+    SET full_name = #{fullName},
+        furigana = #{furigana},
+        nickname = #{nickname},
+        email = #{email},
+        city = #{city},
+        age = #{age},
+        gender = #{gender},
+        remarks = #{remarks}
+    WHERE id = #{id}
+  """)
+  void updateStudent(Student student);
+
+  /**
+   * 受講生コース情報を更新します。
+   * @param studentCourse 更新する受講生のコース情報
+   */
+  @Update("""
+    UPDATE student_course
+    SET course_name = #{courseName},
+        start_date = #{startDate},
+        end_date = #{endDate}
+    WHERE student_id = #{studentId}
+  """)
+  void updateStudentCourse(StudentCourse studentCourse);
+
+  /**
+   * 受講生コース情報を新規登録します。
+   * @param studentCourse 新規登録する受講生のコース情報
+   */
+  @Insert("""
+    INSERT INTO student_course (student_id, course_name, start_date, end_date)
+    VALUES (#{studentId}, #{courseName}, #{startDate}, #{endDate})
+  """)
+  void insertStudentCourse(StudentCourse studentCourse);
 }

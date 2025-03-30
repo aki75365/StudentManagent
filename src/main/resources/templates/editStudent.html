@@ -44,7 +44,7 @@
 
   <!-- 受講コース情報 -->
   <h2>受講コース情報</h2>
-  <div th:each="course, stat : ${studentDetail.studentCourseList}">
+  <div th:each="course, stat : *{studentCourseList}">
     <div>
       <label for="course_name">コース名:</label>
       <input type="text" id="course_name" th:field="*{studentCourseList[__${stat.index}__].courseName}" required />
