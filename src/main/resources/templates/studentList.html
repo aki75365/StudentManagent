@@ -22,7 +22,7 @@
   </tr>
   </thead>
   <tbody>
-  <tr th:each="student : ${studentList}">
+  <tr th:each="student : ${studentList}" th:if="!${student.student.deletedFlag}">
     <td th:text="${student.student.id}"></td>
     <td><a th:href="@{/studentDetail/{id}(id=${student.student.id})}" th:text="${student.student.fullName}"></a></td>
     <td th:text="${student.student.furigana}"></td>
@@ -37,4 +37,5 @@
 </table>
 </body>
 </html>
+
 

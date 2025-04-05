@@ -28,51 +28,49 @@ public class StudentController {
   // 受講生一覧を表示する
   @GetMapping("/studentList")
   public String getStudentList(Model model) {
-    // 受講生情報を取得
     List<Student> students = service.searchgetStudentList();
-    // 受講生のコース情報を取得
     List<StudentCourse> studentCourses = service.getStudentCourseList();
-    // 受講生詳細情報に変換
     List<StudentDetail> studentDetails = converter.convertStudentDetails(students, studentCourses);
-
     model.addAttribute("studentList", studentDetails);
-    return "studentList"; // studentList.html に遷移
+    return "studentList";
   }
 
   // 受講生の詳細情報を表示
   @GetMapping("/studentDetail/{id}")
   public String getStudentDetail(@PathVariable("id") int id, Model model) {
-    // 受講生の詳細情報を取得
     StudentDetail studentDetail = service.getStudentDetailById(id);
     model.addAttribute("studentDetail", studentDetail);
-    return "studentDetail"; // studentDetail.html に遷移
+    return "studentDetail";
   }
 
   // 受講生情報を編集するページ
   @GetMapping("/editStudent/{id}")
   public String editStudent(@PathVariable("id") int id, Model model) {
-    // 編集する受講生の詳細情報を取得
     StudentDetail studentDetail = service.getStudentDetailById(id);
     model.addAttribute("studentDetail", studentDetail);
-    return "editStudent"; // editStudent.html に遷移
+    return "editStudent";
   }
 
   // 受講生情報を更新する
   @PostMapping("/updateStudent")
   public String updateStudent(@ModelAttribute("studentDetail") StudentDetail studentDetail, BindingResult result) {
     if (result.hasErrors()) {
-      return "editStudent"; // エラーがあれば editStudent.html に戻る
+      return "editStudent";
     }
 
-    // 受講生情報を更新
-    service.updateStudent(studentDetail.getStudent().getId(), studentDetail.getStudent());
+    // チェックボックスの状態を student にセット
+    boolean cancelFlag = studentDetail.getStudent().isDeletedFlag();
+    Student student = studentDetail.getStudent();
+    student.setDeletedFlag(cancelFlag); // ← Student オブジェクトに反映
 
-    // コース情報を更新
+    // DBに更新を反映
+    service.updateStudent(student.getId(), student, cancelFlag);
+
     for (StudentCourse course : studentDetail.getStudentCourseList()) {
       service.updateStudentCourse(course);
     }
 
-    return "redirect:/studentList"; // 更新後に受講生一覧に戻る
+    return "redirect:/studentList";
   }
 
   // 新規受講生登録フォームを表示
@@ -80,27 +78,22 @@ public class StudentController {
   public String newStudent(Model model) {
     StudentDetail studentDetail = new StudentDetail();
     studentDetail.setStudent(new Student());
-
-    // studentCourseList を初期化し、最低1件のデータを入れる
     List<StudentCourse> studentCourses = new ArrayList<>();
     studentCourses.add(new StudentCourse(0, 0, "", "", ""));
     studentDetail.setStudentCourseList(studentCourses);
-
     model.addAttribute("studentDetail", studentDetail);
-    return "registerStudent"; // registerStudent.html に遷移
+    return "registerStudent";
   }
 
   // 新規受講生を登録する
   @PostMapping("/registerStudent")
   public String registerStudent(@ModelAttribute("studentDetail") StudentDetail studentDetail, BindingResult result) {
     if (result.hasErrors()) {
-      return "registerStudent"; // エラーがあれば registerStudent.html に戻る
+      return "registerStudent";
     }
 
-    // 受講生情報を登録
     service.registerStudent(studentDetail);
-
-    return "redirect:/studentList"; // 登録後に受講生一覧に戻る
+    return "redirect:/studentList";
   }
 
   // 受講生コース情報を表示
@@ -108,6 +101,6 @@ public class StudentController {
   public String getStudentCourse(Model model) {
     List<Student> students = service.searchgetStudentList();
     model.addAttribute("students", students);
-    return "student_course"; // student_course.html に遷移
+    return "student_course";
   }
 }

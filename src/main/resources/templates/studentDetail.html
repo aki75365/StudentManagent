@@ -8,6 +8,9 @@
 <h1>受講生情報編集</h1>
 
 <form th:action="@{/updateStudent}" th:object="${studentDetail}" method="post">
+  <!-- 受講生IDを隠しフィールドとして追加 -->
+  <input type="hidden" th:field="*{student.id}" />
+
   <!-- 受講生情報の編集フォーム -->
   <div>
     <label for="fullName">名前:</label>
@@ -42,6 +45,12 @@
     <input type="text" id="remarks" th:field="*{student.remarks}" />
   </div>
 
+  <!-- 削除フラグのチェックボックス -->
+  <div>
+    <label for="deletedFlag">削除:</label>
+    <input type="checkbox" id="deletedFlag" th:field="*{student.deletedFlag}" />
+  </div>
+
   <!-- 受講コース情報 -->
   <h2>受講コース情報</h2>
   <div th:each="course, stat : ${studentDetail.studentCourseList}">
@@ -66,3 +75,4 @@
 
 </body>
 </html>
+

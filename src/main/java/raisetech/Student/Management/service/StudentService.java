@@ -64,9 +64,13 @@ public class StudentService {
   }
 
   // 受講生情報を更新
-  public void updateStudent(int id, Student student) {
+  public void updateStudent(int id, Student student, boolean cancelFlag) {
     student.setId(id);  // IDを設定してから更新
-    repository.updateStudent(student);  // 受講生情報を更新
+    // キャンセルフラグがチェックされていた場合、削除フラグを設定
+    if (cancelFlag) {
+      student.setDeletedFlag(true);  // キャンセルされた受講生は削除フラグを立てる
+    }
+    repository.updateStudent(id, student);  // 削除フラグを含む情報を更新
   }
 
   // 受講生コース情報を更新
