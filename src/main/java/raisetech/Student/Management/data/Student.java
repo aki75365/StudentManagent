@@ -8,13 +8,23 @@ import lombok.Setter;
 public class Student {
 
   private int id;
-  private String fullName;  // データベースと一致
+  private String fullName;
   private String furigana;
   private String nickname;
   private String email;
   private String city;
   private int age;
   private String gender;
-  private String remarks;     // 備考を"remarks"に修正
-  private boolean deletedFlag; // 削除フラグを"deleted_flag"に修正
+  private String remarks;
+  private boolean deletedFlag; // 削除フラグ
+
+  // isDeletedFlag メソッドを追加
+  public boolean isDeletedFlag() {
+    return deletedFlag;
+  }
+
+  // setDeletedFlag メソッドを追加（setter）
+  public void setDeletedFlag(boolean deletedFlag) {
+    this.deletedFlag = deletedFlag;
+  }
 }
