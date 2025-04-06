@@ -1,41 +1,25 @@
 package raisetech.Student.Management.controller;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import raisetech.Student.Management.controller.converter.StudentConverter;
+import org.springframework.web.bind.annotation.*;
 import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
 import raisetech.Student.Management.domain.StudentDetail;
 import raisetech.Student.Management.service.StudentService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Controller
-public class StudentController {
+public class StudentViewController {
 
   @Autowired
   private StudentService service;
 
-  @Autowired
-  private StudentConverter converter;
-
-  // 受講生一覧を表示する
-  @GetMapping("/studentList")
-  public String getStudentList(Model model) {
-    List<Student> students = service.searchgetStudentList();
-    List<StudentCourse> studentCourses = service.getStudentCourseList();
-    List<StudentDetail> studentDetails = converter.convertStudentDetails(students, studentCourses);
-    model.addAttribute("studentList", studentDetails);
-    return "studentList";
-  }
-
-  // 受講生の詳細情報を表示
+  // 受講生の詳細表示ページ
   @GetMapping("/studentDetail/{id}")
   public String getStudentDetail(@PathVariable("id") int id, Model model) {
     StudentDetail studentDetail = service.getStudentDetailById(id);
@@ -43,7 +27,7 @@ public class StudentController {
     return "studentDetail";
   }
 
-  // 受講生情報を編集するページ
+  // 編集ページ
   @GetMapping("/editStudent/{id}")
   public String editStudent(@PathVariable("id") int id, Model model) {
     StudentDetail studentDetail = service.getStudentDetailById(id);
@@ -51,29 +35,27 @@ public class StudentController {
     return "editStudent";
   }
 
-  // 受講生情報を更新する
+  // フォーム送信で受講生を更新（画面側）
   @PostMapping("/updateStudent")
   public String updateStudent(@ModelAttribute("studentDetail") StudentDetail studentDetail, BindingResult result) {
     if (result.hasErrors()) {
       return "editStudent";
     }
 
-    // チェックボックスの状態を student にセット
     boolean cancelFlag = studentDetail.getStudent().isDeletedFlag();
     Student student = studentDetail.getStudent();
-    student.setDeletedFlag(cancelFlag); // ← Student オブジェクトに反映
+    student.setDeletedFlag(cancelFlag);
 
-    // DBに更新を反映
     service.updateStudent(student.getId(), student, cancelFlag);
 
-    for (StudentCourse course : studentDetail.getStudentCourseList()) {
-      service.updateStudentCourse(course);
-    }
+    // 受講生IDを渡して、複数のコース情報を更新する
+    service.updateStudentCourses(student.getId(), studentDetail.getStudentCourseList());
 
     return "redirect:/studentList";
   }
 
-  // 新規受講生登録フォームを表示
+
+  // 新規受講生登録画面
   @GetMapping("/newStudent")
   public String newStudent(Model model) {
     StudentDetail studentDetail = new StudentDetail();
@@ -85,7 +67,7 @@ public class StudentController {
     return "registerStudent";
   }
 
-  // 新規受講生を登録する
+  // 新規登録処理
   @PostMapping("/registerStudent")
   public String registerStudent(@ModelAttribute("studentDetail") StudentDetail studentDetail, BindingResult result) {
     if (result.hasErrors()) {
@@ -96,9 +78,9 @@ public class StudentController {
     return "redirect:/studentList";
   }
 
-  // 受講生コース情報を表示
-  @GetMapping("/students")
-  public String getStudentCourse(Model model) {
+  // 一覧ページ
+  @GetMapping("/studentList")
+  public String studentListView(Model model) {
     List<Student> students = service.searchgetStudentList();
     model.addAttribute("students", students);
     return "students";
