@@ -51,21 +51,20 @@
     <input type="checkbox" id="cancelFlag" th:field="*{student.deletedFlag}" />
   </div>
 
-
   <!-- 受講コース情報 -->
   <h2>受講コース情報</h2>
   <div th:each="course, stat : *{studentCourseList}">
     <div>
-      <label for="course_name">コース名:</label>
-      <input type="text" id="course_name" th:field="*{studentCourseList[__${stat.index}__].courseName}" required />
+      <label for="courseName">コース名:</label>
+      <input type="text" id="courseName" th:field="*{studentCourseList[__${stat.index}__].courseName}" required />
     </div>
     <div>
-      <label for="start_date">受講開始日:</label>
-      <input type="date" id="start_date" th:field="*{studentCourseList[__${stat.index}__].startDate}" required />
+      <label for="startDate">受講開始日:</label>
+      <input type="date" id="startDate" th:field="*{studentCourseList[__${stat.index}__].startDate}" required />
     </div>
     <div>
-      <label for="end_date">受講終了予定日:</label>
-      <input type="date" id="end_date" th:field="*{studentCourseList[__${stat.index}__].endDate}" required />
+      <label for="endDate">受講終了予定日:</label>
+      <input type="date" id="endDate" th:field="*{studentCourseList[__${stat.index}__].endDate}" required />
     </div>
   </div>
 

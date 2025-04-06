@@ -101,6 +101,6 @@ public class StudentController {
   public String getStudentCourse(Model model) {
     List<Student> students = service.searchgetStudentList();
     model.addAttribute("students", students);
-    return "student_course";
+    return "students";
   }
 }
