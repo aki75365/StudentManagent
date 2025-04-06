@@ -12,5 +12,8 @@ import java.util.List;
 public class StudentDetail {
 
   private Student student;
-  private List<StudentCourse> studentCourseList; // ← セミコロン追加！
+  private List<StudentCourse> studentCourseList;
+  private boolean deletedFlag; // 削除フラグを追加
+
+
 }
