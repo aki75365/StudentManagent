@@ -62,27 +62,13 @@ public class StudentController {
       return "registerStudent";
     }
 
-    // Student オブジェクトを取得
     Student student = studentDetail.getStudent();
     if (student == null) {
-      // student が null の場合、新しい Student インスタンスを作成
       student = new Student();
       studentDetail.setStudent(student);
     }
 
-    // デバッグ用ログ出力
-    System.out.println("登録情報: ");
-    System.out.println("fullName = " + student.getFullName());
-    System.out.println("furigana = " + student.getFurigana());
-    System.out.println("nickname = " + student.getNickname());
-    System.out.println("email = " + student.getEmail());
-    System.out.println("city = " + student.getCity());
-    System.out.println("age = " + student.getAge());
-    System.out.println("gender = " + student.getGender());
-    System.out.println("remarks = " + student.getRemarks());
-    System.out.println("deletedFlag = " + student.isDeletedFlag());
-
-    // Student を service に渡す
+    // 受講生情報を登録
     service.registerStudent(studentDetail);
 
     return "redirect:/studentList";
