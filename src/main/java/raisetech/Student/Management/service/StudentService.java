@@ -3,6 +3,7 @@ package raisetech.Student.Management.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import raisetech.Student.Management.data.Student;
+import raisetech.Student.Management.data.StudentCourse;
 import raisetech.Student.Management.domain.StudentDetail;
 import raisetech.Student.Management.repository.StudentRepository;
 import raisetech.Student.Management.repository.StudentCourseRepository;
@@ -14,34 +15,38 @@ import java.util.ArrayList;
 public class StudentService {
 
   @Autowired
-  private StudentRepository repository;
+  private StudentRepository studentRepository;
 
   @Autowired
   private StudentCourseRepository studentCourseRepository;
 
-  // 受講生情報を取得
-  public List<Student> searchgetStudentList() {
-    return repository.searchAllStudents();
+  // 受講生情報を全件取得
+  public List<Student> getAllStudents() {
+    return studentRepository.searchAllStudents();
   }
 
-  // 受講生コース情報を取得
-  public List<raisetech.Student.Management.data.StudentCourse> getStudentCourseList() {
+  // 受講生のコース情報を全件取得
+  public List<StudentCourse> getAllStudentCourses() {
     return studentCourseRepository.findAllStudentCourses();
   }
 
-  // 受講生詳細情報を取得（ID指定）
-  public StudentDetail getStudentDetailById(int id) {
+  // 受講生のコース情報を受講生IDで取得
+  public List<StudentCourse> getCoursesByStudentId(int studentId) {
+    return studentCourseRepository.findStudentCoursesByStudentId(studentId);
+  }
+
+  // 受講生詳細情報をID指定で取得
+  public StudentDetail getStudentDetail(int studentId) {
     // 受講生情報を取得
-    Student student = repository.findStudentById(id);
+    Student student = studentRepository.findStudentById(studentId);
     if (student == null) {
-      throw new IllegalArgumentException("指定されたIDの受講生が見つかりません: " + id);
+      throw new IllegalArgumentException("指定されたIDの受講生が見つかりません: " + studentId);
     }
 
     // 受講生コース情報を取得
-    List<raisetech.Student.Management.data.StudentCourse> courses = studentCourseRepository.findAllStudentCourses();
-    List<raisetech.Student.Management.data.StudentCourse> studentCourses = new ArrayList<>();
-    for (raisetech.Student.Management.data.StudentCourse course : courses) {
-      if (course.getStudentId() == id) {
+    List<StudentCourse> studentCourses = new ArrayList<>();
+    for (StudentCourse course : studentCourseRepository.findAllStudentCourses()) {
+      if (course.getStudentId() == studentId) {
         studentCourses.add(course);
       }
     }
@@ -54,32 +59,39 @@ public class StudentService {
     return studentDetail;
   }
 
-  // 受講生登録
-  public void registerStudent(StudentDetail studentDetail) {
+  // 受講生情報を更新
+  public void updateStudentDetails(int studentId, Student student, boolean cancelFlag) {
+    student.setId(studentId);
+    if (cancelFlag) {
+      student.setDeletedFlag(true);
+    }
+    studentRepository.updateStudent(studentId, student); // int型でそのまま渡す
+  }
+
+  // 受講生コース情報を更新
+  public void updateStudentCourses(int studentId, List<StudentCourse> studentCourses) {
+    for (StudentCourse course : studentCourses) {
+      course.setStudentId(studentId);  // 各コースに受講生IDを設定
+      studentCourseRepository.updateStudentCourse(course);
+    }
+  }
+
+  // 単一の受講生コース情報を更新
+  public void updateSingleStudentCourse(StudentCourse studentCourse) {
+    studentCourseRepository.updateStudentCourse(studentCourse);
+  }
+
+  // 受講生を登録
+  public void registerNewStudent(StudentDetail studentDetail) {
     if (studentDetail.getStudent() != null) {
-      repository.insertStudent(studentDetail.getStudent());
+      studentRepository.insertStudent(studentDetail.getStudent());
     } else {
       throw new IllegalArgumentException("StudentDetail に Student オブジェクトが含まれていません");
     }
   }
 
-  // 受講生情報を更新
-  public void updateStudent(int id, Student student, boolean cancelFlag) {
-    student.setId(id);  // IDを設定してから更新
-    // キャンセルフラグがチェックされていた場合、削除フラグを設定
-    if (cancelFlag) {
-      student.setDeletedFlag(true);  // キャンセルされた受講生は削除フラグを立てる
-    }
-    repository.updateStudent(id, student);  // 削除フラグを含む情報を更新
-  }
-
-  // 受講生コース情報を更新
-  public void updateStudentCourse(raisetech.Student.Management.data.StudentCourse studentCourse) {
-    studentCourseRepository.updateStudentCourse(studentCourse);
-  }
-
   // 受講生コース情報を新規登録
-  public void insertStudentCourse(raisetech.Student.Management.data.StudentCourse studentCourse) {
+  public void registerNewStudentCourse(StudentCourse studentCourse) {
     studentCourseRepository.insertStudentCourse(studentCourse);
   }
 }

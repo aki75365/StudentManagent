@@ -7,7 +7,7 @@
 <body>
 <h1>受講生情報一覧</h1>
 
-<table border="1">
+<table border="1" cellpadding="8">
   <thead>
   <tr>
     <th>ID</th>
@@ -18,20 +18,25 @@
     <th>住んでる地域</th>
     <th>年齢</th>
     <th>性別</th>
-    <th>削除フラグ</th>
+    <th>状態</th>
   </tr>
   </thead>
   <tbody>
+  <!-- 削除フラグがfalseの受講生を表示 -->
   <tr th:each="student : ${studentList}" th:if="!${student.student.deletedFlag}">
     <td th:text="${student.student.id}"></td>
-    <td><a th:href="@{/studentDetail/{id}(id=${student.student.id})}" th:text="${student.student.fullName}"></a></td>
+    <td>
+      <a th:href="@{/studentDetail/{id}(id=${student.student.id})}" th:text="${student.student.fullName}"></a>
+    </td>
     <td th:text="${student.student.furigana}"></td>
     <td th:text="${student.student.nickname}"></td>
     <td th:text="${student.student.email}"></td>
     <td th:text="${student.student.city}"></td>
     <td th:text="${student.student.age}"></td>
     <td th:text="${student.student.gender}"></td>
-    <td th:text="${student.student.deletedFlag}"></td>
+    <td>
+      <span th:text="${student.student.deletedFlag ? '削除' : 'アクティブ'}"></span>
+    </td>
   </tr>
   </tbody>
 </table>

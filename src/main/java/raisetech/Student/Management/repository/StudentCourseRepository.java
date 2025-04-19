@@ -5,21 +5,21 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import raisetech.Student.Management.data.StudentCourse;
-
 import java.util.List;
 
 /**
- * 受講生のコース情報を扱うリポジトリ
+ * 受講生コース情報を扱うリポジトリ
  */
 @Mapper
 public interface StudentCourseRepository {
 
   /**
-   * 受講生コース情報を取得します。
-   * @return 受講生のコース情報の一覧
+   * 受講生IDに関連するコース情報を全て取得します。
+   * @param studentId 受講生ID
+   * @return 受講生のコース情報のリスト
    */
-  @Select("SELECT * FROM student_course")
-  List<StudentCourse> findAllStudentCourses();
+  @Select("SELECT * FROM student_course WHERE student_id = #{studentId}")
+  List<StudentCourse> findStudentCoursesByStudentId(int studentId);
 
   /**
    * 受講生コース情報を更新します。
@@ -30,7 +30,7 @@ public interface StudentCourseRepository {
     SET course_name = #{courseName},
         start_date = #{startDate},
         end_date = #{endDate}
-    WHERE id = #{id}
+    WHERE student_id = #{studentId}
   """)
   void updateStudentCourse(StudentCourse studentCourse);
 
@@ -43,5 +43,7 @@ public interface StudentCourseRepository {
     VALUES (#{studentId}, #{courseName}, #{startDate}, #{endDate})
   """)
   void insertStudentCourse(StudentCourse studentCourse);
-}
 
+  @Select("SELECT * FROM student_course")
+List<StudentCourse> findAllStudentCourses();
+}
