@@ -1,88 +1,78 @@
 package raisetech.Student.Management.controller;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import raisetech.Student.Management.domain.StudentDetail;
 import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
-import raisetech.Student.Management.domain.StudentDetail;
 import raisetech.Student.Management.service.StudentService;
 
-import java.util.ArrayList;
-import java.util.List;
-
-@Controller
+@RestController
 public class StudentViewController {
 
+  private final StudentService studentService;
+
   @Autowired
-  private StudentService service;
-
-  // 受講生の詳細表示ページ
-  @GetMapping("/studentDetail/{id}")
-  public String getStudentDetail(@PathVariable("id") int id, Model model) {
-    StudentDetail studentDetail = service.getStudentDetailById(id);
-    model.addAttribute("studentDetail", studentDetail);
-    return "studentDetail";
+  public StudentViewController(StudentService studentService) {
+    this.studentService = studentService;
   }
 
-  // 編集ページ
-  @GetMapping("/editStudent/{id}")
-  public String editStudent(@PathVariable("id") int id, Model model) {
-    StudentDetail studentDetail = service.getStudentDetailById(id);
-    model.addAttribute("studentDetail", studentDetail);
-    return "editStudent";
+  // 受講生一覧を表示
+  @GetMapping("/studentList")
+  public List<Student> getstudentList() {
+    return studentService.getAllStudents();
   }
 
-  // フォーム送信で受講生を更新（画面側）
-  @PostMapping("/updateStudent")
-  public String updateStudent(@ModelAttribute("studentDetail") StudentDetail studentDetail, BindingResult result) {
-    if (result.hasErrors()) {
-      return "editStudent";
+  // 受講生詳細を表示
+  @GetMapping("/{studentId}")
+  public String viewStudent(@PathVariable int studentId, Model model) {
+    try {
+      StudentDetail studentDetail = studentService.getStudentDetail(studentId);
+      model.addAttribute("studentDetail", studentDetail);
+      return "studentDetail";
+    } catch (IllegalArgumentException e) {
+      return "redirect:/students";
     }
-
-    boolean cancelFlag = studentDetail.getStudent().isDeletedFlag();
-    Student student = studentDetail.getStudent();
-    student.setDeletedFlag(cancelFlag);
-
-    service.updateStudent(student.getId(), student, cancelFlag);
-
-    // 受講生IDを渡して、複数のコース情報を更新する
-    service.updateStudentCourses(student.getId(), studentDetail.getStudentCourseList());
-
-    return "redirect:/studentList";
   }
 
-
-  // 新規受講生登録画面
-  @GetMapping("/newStudent")
-  public String newStudent(Model model) {
-    StudentDetail studentDetail = new StudentDetail();
-    studentDetail.setStudent(new Student());
-    List<StudentCourse> studentCourses = new ArrayList<>();
-    studentCourses.add(new StudentCourse(0, 0, "", "", ""));
-    studentDetail.setStudentCourseList(studentCourses);
-    model.addAttribute("studentDetail", studentDetail);
+  // 受講生情報を登録画面表示
+  @GetMapping("/register")
+  public String showRegistrationForm(Model model) {
+    model.addAttribute("studentDetail", new StudentDetail());
     return "registerStudent";
   }
 
-  // 新規登録処理
-  @PostMapping("/registerStudent")
-  public String registerStudent(@ModelAttribute("studentDetail") StudentDetail studentDetail, BindingResult result) {
-    if (result.hasErrors()) {
-      return "registerStudent";
-    }
-
-    service.registerStudent(studentDetail);
-    return "redirect:/studentList";
+  // 受講生情報を登録処理
+  @PostMapping("/register")
+  public String registerStudent(@ModelAttribute("studentDetail") StudentDetail studentDetail) {
+    studentService.registerNewStudent(studentDetail);
+    return "redirect:/students";
   }
 
-  // 一覧ページ
-  @GetMapping("/studentList")
-  public String studentListView(Model model) {
-    List<Student> students = service.searchgetStudentList();
-    model.addAttribute("students", students);
-    return "students";
+  // 受講生情報を編集画面表示
+  @GetMapping("/edit/{studentId}")
+  public String editStudent(@PathVariable int studentId, Model model) {
+    try {
+      StudentDetail studentDetail = studentService.getStudentDetail(studentId);
+      model.addAttribute("studentDetail", studentDetail);
+      return "editStudent";
+    } catch (IllegalArgumentException e) {
+      return "redirect:/students";
+    }
+  }
+
+  // 受講生情報を更新処理
+  @PostMapping("/update")
+  public String updateStudent(@ModelAttribute("studentDetail") StudentDetail studentDetail) {
+    Student student = studentDetail.getStudent();
+    int studentId = student.getId(); // ← 修正ポイント（int型で統一）
+
+    studentService.updateStudentDetails(studentId, student, false);
+    studentService.updateStudentCourses(studentId, studentDetail.getStudentCourseList());
+
+    return "redirect:/students";
   }
 }

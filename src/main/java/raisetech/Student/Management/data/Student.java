@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class Student {
 
-  private int id;
+  private int id;  // id の型を int に変更
   private String fullName;
   private String furigana;
   private String nickname;
