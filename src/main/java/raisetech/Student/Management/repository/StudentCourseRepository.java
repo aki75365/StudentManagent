@@ -22,6 +22,14 @@ public interface StudentCourseRepository {
   List<StudentCourse> findAllStudentCourses();
 
   /**
+   * 受講生IDに関連するコース情報を取得します。
+   * @param studentId 受講生ID
+   * @return 受講生IDに関連するコース情報の一覧
+   */
+  @Select("SELECT * FROM student_course WHERE student_id = #{studentId}")
+  List<StudentCourse> findStudentCoursesByStudentId(int studentId);
+
+  /**
    * 受講生コース情報を更新します。
    * @param studentCourse 更新する受講生のコース情報
    */
@@ -44,4 +52,3 @@ public interface StudentCourseRepository {
   """)
   void insertStudentCourse(StudentCourse studentCourse);
 }
-

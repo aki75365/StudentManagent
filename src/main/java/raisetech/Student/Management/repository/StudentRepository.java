@@ -22,7 +22,6 @@ public interface StudentRepository {
   @Select("SELECT * FROM students WHERE deleted_flag = false")
   List<Student> searchAllStudents();
 
-
   /**
    * 30代の受講生を検索します。
    * @return 30代の受講生情報の一覧
@@ -84,8 +83,7 @@ public interface StudentRepository {
       remarks = #{student.remarks},
       deleted_flag = #{student.deletedFlag}
   WHERE id = #{id}
-""")
-
+  """)
   void updateStudent(@Param("id") int id, @Param("student") Student student);
 
   /**
