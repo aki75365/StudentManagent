@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="raisetech.Student.Management.repository.StudentRepository">
+
+  <!-- 全件検索 -->
+  <select id="searchAllStudents" resultType="raisetech.Student.Management.data.Student">
+    SELECT * FROM students WHERE deleted_flag = false
+  </select>
+
+  <!-- 30代の受講生検索 -->
+  <select id="findStudentsInTheir30s" resultType="raisetech.Student.Management.data.Student">
+    SELECT * FROM students WHERE age BETWEEN 30 AND 39
+  </select>
+
+  <!-- JAVAコースの受講生検索 -->
+  <select id="findJavaCourses" resultType="raisetech.Student.Management.data.StudentCourse">
+    SELECT s.id AS studentId, s.full_name, c.course_name, c.start_date, c.end_date
+    FROM students s
+    JOIN student_course c ON s.id = c.student_id
+    WHERE c.course_name = 'JAVA'
+  </select>
+
+  <!-- ID指定で受講生を取得 -->
+  <select id="findStudentById" parameterType="int" resultType="raisetech.Student.Management.data.Student">
+    SELECT * FROM students WHERE id = #{id} AND deleted_flag = false
+  </select>
+
+  <!-- 受講生情報の更新 -->
+  <update id="updateStudent" parameterType="map">
+    UPDATE students
+    SET
+    full_name = #{student.fullName},
+    furigana = #{student.furigana},
+    nickname = #{student.nickname},
+    email = #{student.email},
+    city = #{student.city},
+    age = #{student.age},
+    gender = #{student.gender},
+    remarks = #{student.remarks},
+    deleted_flag = #{student.deletedFlag}
+    WHERE id = #{id}
+  </update>
+
+  <!-- 新規受講生の登録 -->
+  <insert id="insertStudent" parameterType="raisetech.Student.Management.data.Student">
+    INSERT INTO students (
+    full_name, furigana, nickname, email, city, age, gender, remark, deleted_flag
+    ) VALUES (
+    #{fullName}, #{furigana}, #{nickname}, #{email}, #{city},
+    #{age}, #{gender}, #{remark}, #{deletedFlag}
+    )
+  </insert>
+
+  <!-- 新規コースの登録 -->
+  <insert id="insertStudentCourse" parameterType="raisetech.Student.Management.data.StudentCourse">
+    INSERT INTO student_course (
+    student_id, course_name, start_date, end_date
+    ) VALUES (
+    #{studentId}, #{courseName}, #{startDate}, #{endDate}
+    )
+  </insert>
+
+</mapper>
