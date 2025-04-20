@@ -2,14 +2,17 @@ package raisetech.Student.Management.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
 import raisetech.Student.Management.domain.StudentDetail;
 import raisetech.Student.Management.service.StudentService;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/api/students")
 public class StudentApiController {
@@ -29,12 +32,34 @@ public class StudentApiController {
 
   // 受講生詳細情報の取得
   @GetMapping("/{studentId}")
-  public ResponseEntity<StudentDetail> getStudentDetail(@PathVariable int studentId) {
+  public ResponseEntity<StudentDetail> getStudentDetail(
+      @PathVariable @Size(min = 1, max = 3, message = "studentIdは1〜3桁の数字で指定してください") String studentId) {
     try {
-      StudentDetail detail = studentService.getStudentDetail(studentId);
+      int id = Integer.parseInt(studentId);
+      StudentDetail detail = studentService.getStudentDetail(id);
       return ResponseEntity.ok(detail);
+    } catch (NumberFormatException e) {
+      return ResponseEntity.badRequest().body(null); // 数字以外が渡された場合
     } catch (IllegalArgumentException e) {
       return ResponseEntity.notFound().build();
+    }
+  }
+
+  // 受講生情報の更新（競合している@PutMappingを1つに修正）
+  @PutMapping("/{studentId}")
+  public ResponseEntity<String> updateStudent(
+      @PathVariable @Size(min = 1, max = 3, message = "studentIdは1〜3桁の数字で指定してください") String studentId,
+      @RequestBody Student student,
+      @RequestParam(defaultValue = "false") boolean cancel
+  ) {
+    try {
+      int id = Integer.parseInt(studentId);
+      studentService.updateStudentDetails(id, student, cancel);
+      return ResponseEntity.ok("更新が完了しました");
+    } catch (NumberFormatException e) {
+      return ResponseEntity.badRequest().body("studentIdは数値で指定してください");
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body("更新に失敗しました: " + e.getMessage());
     }
   }
 
@@ -48,23 +73,6 @@ public class StudentApiController {
       return ResponseEntity.badRequest().body("登録に失敗しました: " + e.getMessage());
     }
   }
-
-  // 受講生情報の更新
-  @PutMapping("/{studentId}")
-  public ResponseEntity<String> updateStudent(
-      @PathVariable int studentId, // ← ここを int に変更
-      @RequestBody Student student,
-      @RequestParam(defaultValue = "false") boolean cancel
-  ) {
-    try {
-      studentService.updateStudentDetails(studentId, student, cancel); // 引数も int に変更
-      return ResponseEntity.ok("更新が完了しました");
-    } catch (Exception e) {
-      return ResponseEntity.badRequest().body("更新に失敗しました: " + e.getMessage());
-    }
-  }
-
-
 
   // 受講生コース情報の更新
   @PutMapping("/{studentId}/courses")

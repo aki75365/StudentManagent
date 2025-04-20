@@ -2,6 +2,7 @@ package raisetech.Student.Management.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // ← 追加
 import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
 import raisetech.Student.Management.domain.StudentDetail;
@@ -20,30 +21,28 @@ public class StudentService {
   @Autowired
   private StudentCourseRepository studentCourseRepository;
 
-  // 受講生情報を全件取得
+  // 読み取り：受講生情報を全件取得
   public List<Student> getAllStudents() {
     return studentRepository.searchAllStudents();
   }
 
-  // 受講生のコース情報を全件取得
+  // 読み取り：受講生のコース情報を全件取得
   public List<StudentCourse> getAllStudentCourses() {
     return studentCourseRepository.findAllStudentCourses();
   }
 
-  // 受講生のコース情報を受講生IDで取得
+  // 読み取り：受講生IDでコース情報取得
   public List<StudentCourse> getCoursesByStudentId(int studentId) {
     return studentCourseRepository.findStudentCoursesByStudentId(studentId);
   }
 
-  // 受講生詳細情報をID指定で取得
+  // 読み取り：受講生詳細情報を取得
   public StudentDetail getStudentDetail(int studentId) {
-    // 受講生情報を取得
     Student student = studentRepository.findStudentById(studentId);
     if (student == null) {
       throw new IllegalArgumentException("指定されたIDの受講生が見つかりません: " + studentId);
     }
 
-    // 受講生コース情報を取得
     List<StudentCourse> studentCourses = new ArrayList<>();
     for (StudentCourse course : studentCourseRepository.findAllStudentCourses()) {
       if (course.getStudentId() == studentId) {
@@ -51,7 +50,6 @@ public class StudentService {
       }
     }
 
-    // StudentDetail に受講生情報とコース情報をセット
     StudentDetail studentDetail = new StudentDetail();
     studentDetail.setStudent(student);
     studentDetail.setStudentCourseList(studentCourses);
@@ -59,29 +57,33 @@ public class StudentService {
     return studentDetail;
   }
 
-  // 受講生情報を更新
+  // 書き込み：受講生情報の更新
+  @Transactional
   public void updateStudentDetails(int studentId, Student student, boolean cancelFlag) {
     student.setId(studentId);
     if (cancelFlag) {
       student.setDeletedFlag(true);
     }
-    studentRepository.updateStudent(studentId, student); // int型でそのまま渡す
+    studentRepository.updateStudent(studentId, student);
   }
 
-  // 受講生コース情報を更新
+  // 書き込み：複数の受講生コース情報を更新
+  @Transactional
   public void updateStudentCourses(int studentId, List<StudentCourse> studentCourses) {
     for (StudentCourse course : studentCourses) {
-      course.setStudentId(studentId);  // 各コースに受講生IDを設定
+      course.setStudentId(studentId);
       studentCourseRepository.updateStudentCourse(course);
     }
   }
 
-  // 単一の受講生コース情報を更新
+  // 書き込み：単一の受講生コース情報を更新
+  @Transactional
   public void updateSingleStudentCourse(StudentCourse studentCourse) {
     studentCourseRepository.updateStudentCourse(studentCourse);
   }
 
-  // 受講生を登録
+  // 書き込み：受講生情報を新規登録
+  @Transactional
   public void registerNewStudent(StudentDetail studentDetail) {
     if (studentDetail.getStudent() != null) {
       studentRepository.insertStudent(studentDetail.getStudent());
@@ -90,7 +92,8 @@ public class StudentService {
     }
   }
 
-  // 受講生コース情報を新規登録
+  // 書き込み：受講生コース情報を新規登録
+  @Transactional
   public void registerNewStudentCourse(StudentCourse studentCourse) {
     studentCourseRepository.insertStudentCourse(studentCourse);
   }
