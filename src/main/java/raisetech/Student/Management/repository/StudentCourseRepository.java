@@ -45,5 +45,5 @@ public interface StudentCourseRepository {
   void insertStudentCourse(StudentCourse studentCourse);
 
   @Select("SELECT * FROM student_course")
-List<StudentCourse> findAllStudentCourses();
+  List<StudentCourse> findAllStudentCourses();
 }
