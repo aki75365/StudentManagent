@@ -1,12 +1,14 @@
 package raisetech.Student.Management.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
 import raisetech.Student.Management.domain.StudentDetail;
+import raisetech.Student.Management.exception.StudentNotFoundException; // ← 追加
 import raisetech.Student.Management.service.StudentService;
 import jakarta.validation.constraints.Size;
 
@@ -40,12 +42,10 @@ public class StudentApiController {
       return ResponseEntity.ok(detail);
     } catch (NumberFormatException e) {
       return ResponseEntity.badRequest().body(null); // 数字以外が渡された場合
-    } catch (IllegalArgumentException e) {
-      return ResponseEntity.notFound().build();
     }
   }
 
-  // 受講生情報の更新（競合している@PutMappingを1つに修正）
+  // 受講生情報の更新
   @PutMapping("/{studentId}")
   public ResponseEntity<String> updateStudent(
       @PathVariable @Size(min = 1, max = 3, message = "studentIdは1〜3桁の数字で指定してください") String studentId,
@@ -58,12 +58,14 @@ public class StudentApiController {
       return ResponseEntity.ok("更新が完了しました");
     } catch (NumberFormatException e) {
       return ResponseEntity.badRequest().body("studentIdは数値で指定してください");
+    } catch (StudentNotFoundException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     } catch (Exception e) {
       return ResponseEntity.badRequest().body("更新に失敗しました: " + e.getMessage());
     }
   }
 
-  // 新規受講生登録（Student + Course情報）
+  // 新規受講生登録
   @PostMapping
   public ResponseEntity<String> createStudent(@RequestBody StudentDetail studentDetail) {
     try {
@@ -90,11 +92,20 @@ public class StudentApiController {
     return studentService.getCoursesByStudentId(studentId);
   }
 
-  // 受講生コース情報の新規登録（個別）
+  // 受講生コース情報の新規登録
   @PostMapping("/{studentId}/courses")
   public ResponseEntity<String> registerCourse(@PathVariable int studentId, @RequestBody StudentCourse course) {
     course.setStudentId(studentId);
     studentService.registerNewStudentCourse(course);
     return ResponseEntity.status(201).body("コース情報を追加しました");
   }
+
+  // StudentNotFoundException に対応する例外ハンドラー
+  @ExceptionHandler(StudentNotFoundException.class)
+  public ResponseEntity<String> handleStudentNotFoundException(StudentNotFoundException ex) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+  }
 }
+
+
+
