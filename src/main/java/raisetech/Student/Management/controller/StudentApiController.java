@@ -49,12 +49,11 @@ public class StudentApiController {
   @PutMapping("/{studentId}")
   public ResponseEntity<String> updateStudent(
       @PathVariable @Size(min = 1, max = 3, message = "studentIdは1〜3桁の数字で指定してください") String studentId,
-      @RequestBody Student student,
-      @RequestParam(defaultValue = "false") boolean cancel
+      @RequestBody Student student
   ) {
     try {
       int id = Integer.parseInt(studentId);
-      studentService.updateStudentDetails(id, student, cancel);
+      studentService.updateStudentDetails(id, student, false); // ← false を明示
       return ResponseEntity.ok("更新が完了しました");
     } catch (NumberFormatException e) {
       return ResponseEntity.badRequest().body("studentIdは数値で指定してください");
@@ -62,6 +61,7 @@ public class StudentApiController {
       return ResponseEntity.badRequest().body("更新に失敗しました: " + e.getMessage());
     }
   }
+
 
   // 新規受講生登録（Student + Course情報）
   @PostMapping
