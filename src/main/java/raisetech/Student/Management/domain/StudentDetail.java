@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,11 +12,11 @@ import java.util.List;
 public class StudentDetail {
 
   private Student student;
-  private List<StudentCourse> studentCourseList = new ArrayList<>();
+  private List<StudentCourse> studentCourseList;
 
   // デフォルトコンストラクタ
   public StudentDetail() {
     this.student = new Student();
-    this.studentCourseList.add(new StudentCourse());
+    this.studentCourseList = new ArrayList<>();
   }
-}
+ 

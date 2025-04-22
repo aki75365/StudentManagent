@@ -2,61 +2,99 @@ package raisetech.Student.Management.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
 import raisetech.Student.Management.domain.StudentDetail;
 import raisetech.Student.Management.service.StudentService;
-import raisetech.Student.Management.controller.converter.StudentConverter;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
+@Validated
 @RestController
+@RequestMapping("/api/students")
 public class StudentApiController {
 
-  @Autowired
-  private StudentService service;
+  private final StudentService studentService;
 
   @Autowired
-  private StudentConverter converter;
-
-  // API：受講生一覧（JSONで返す）
-  @GetMapping("/api/studentList")
-  public List<StudentDetail> getStudentList() {
-    List<Student> students = service.searchgetStudentList();
-    List<StudentCourse> studentCourses = service.getStudentCourseList();
-    return converter.convertStudentDetails(students, studentCourses);
+  public StudentApiController(StudentService studentService) {
+    this.studentService = studentService;
   }
 
-  // 受講生情報更新
-  @PostMapping("/api/updateStudent")
-  public ResponseEntity<String> updateStudent(@RequestBody StudentDetail studentDetail) {
+  // 全受講生情報の取得
+  @GetMapping
+  public List<Student> getAllStudents() {
+    return studentService.getAllStudents();
+  }
 
-    boolean cancelFlag = studentDetail.getStudent().isDeletedFlag();
-    Student student = studentDetail.getStudent();
-    student.setDeletedFlag(cancelFlag);
+  // 受講生詳細情報の取得
+  @GetMapping("/{studentId}")
+  public ResponseEntity<StudentDetail> getStudentDetail(
+      @PathVariable @Size(min = 1, max = 3, message = "studentIdは1〜3桁の数字で指定してください") String studentId) {
+    try {
+      int id = Integer.parseInt(studentId);
+      StudentDetail detail = studentService.getStudentDetail(id);
+      return ResponseEntity.ok(detail);
+    } catch (NumberFormatException e) {
+      return ResponseEntity.badRequest().body(null); // 数字以外が渡された場合
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.notFound().build();
+    }
+  }
 
-    service.updateStudent(student.getId(), student, cancelFlag);
-
-    // studentId とコース情報を渡して一括更新
-    service.updateStudentCourses(student.getId(), studentDetail.getStudentCourseList());
-
-    return ResponseEntity.ok("更新処理が成功しました");
+  // 受講生情報の更新（競合している@PutMappingを1つに修正）
+  @PutMapping("/{studentId}")
+  public ResponseEntity<String> updateStudent(
+      @PathVariable @Size(min = 1, max = 3, message = "studentIdは1〜3桁の数字で指定してください") String studentId,
+      @RequestBody Student student
+  ) {
+    try {
+      int id = Integer.parseInt(studentId);
+      studentService.updateStudentDetails(id, student, false); // ← false を明示
+      return ResponseEntity.ok("更新が完了しました");
+    } catch (NumberFormatException e) {
+      return ResponseEntity.badRequest().body("studentIdは数値で指定してください");
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body("更新に失敗しました: " + e.getMessage());
+    }
   }
 
 
-
-  // API：受講生IDに関連するコース情報を取得
-  @GetMapping("/api/student/{id}/courses")
-  public ResponseEntity<List<StudentCourse>> getStudentCourses(@PathVariable("id") int id) {
-    List<StudentCourse> courses = service.getStudentCoursesByStudentId(id);
-    return ResponseEntity.ok(courses);
+  // 新規受講生登録（Student + Course情報）
+  @PostMapping
+  public ResponseEntity<String> createStudent(@RequestBody StudentDetail studentDetail) {
+    try {
+      studentService.registerNewStudent(studentDetail);
+      return ResponseEntity.status(201).body("登録が完了しました");
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body("登録に失敗しました: " + e.getMessage());
+    }
   }
 
-  // API：受講生のコース情報を更新
-  @PostMapping("/api/student/{id}/courses")
-  public ResponseEntity<String> updateStudentCourses(@PathVariable("id") int id, @RequestBody List<StudentCourse> studentCourses) {
-    service.updateStudentCourses(id, studentCourses);
-    return ResponseEntity.ok("受講生のコース情報が更新されました");
+  // 受講生コース情報の更新
+  @PutMapping("/{studentId}/courses")
+  public ResponseEntity<String> updateStudentCourses(
+      @PathVariable int studentId,
+      @RequestBody List<StudentCourse> studentCourses
+  ) {
+    studentService.updateStudentCourses(studentId, studentCourses);
+    return ResponseEntity.ok("コース情報の更新が完了しました");
+  }
+
+  // 受講生のコース情報の取得
+  @GetMapping("/{studentId}/courses")
+  public List<StudentCourse> getStudentCourses(@PathVariable int studentId) {
+    return studentService.getCoursesByStudentId(studentId);
+  }
+
+  // 受講生コース情報の新規登録（個別）
+  @PostMapping("/{studentId}/courses")
+  public ResponseEntity<String> registerCourse(@PathVariable int studentId, @RequestBody StudentCourse course) {
+    course.setStudentId(studentId);
+    studentService.registerNewStudentCourse(course);
+    return ResponseEntity.status(201).body("コース情報を追加しました");
   }
 }

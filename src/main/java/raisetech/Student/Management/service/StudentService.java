@@ -2,6 +2,7 @@ package raisetech.Student.Management.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // ← 追加
 import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
 import raisetech.Student.Management.domain.StudentDetail;
@@ -15,45 +16,40 @@ import java.util.ArrayList;
 public class StudentService {
 
   @Autowired
-  private StudentRepository repository;
+  private StudentRepository studentRepository;
 
   @Autowired
   private StudentCourseRepository studentCourseRepository;
 
-  // 受講生情報を取得
-  public List<Student> searchgetStudentList() {
-    return repository.searchAllStudents();
+  // 読み取り：受講生情報を全件取得
+  public List<Student> getAllStudents() {
+    return studentRepository.searchAllStudents();
   }
 
-  // 受講生コース情報を取得
-  public List<StudentCourse> getStudentCourseList() {
+  // 読み取り：受講生のコース情報を全件取得
+  public List<StudentCourse> getAllStudentCourses() {
     return studentCourseRepository.findAllStudentCourses();
   }
 
-  // 受講生のコース情報を受講生IDで取得
-  public List<StudentCourse> getStudentCoursesByStudentId(int studentId) {
-    // 受講生IDに関連するコース情報を取得
+  // 読み取り：受講生IDでコース情報取得
+  public List<StudentCourse> getCoursesByStudentId(int studentId) {
     return studentCourseRepository.findStudentCoursesByStudentId(studentId);
   }
 
-  // 受講生詳細情報を取得（ID指定）
-  public StudentDetail getStudentDetailById(int id) {
-    // 受講生情報を取得
-    Student student = repository.findStudentById(id);
+  // 読み取り：受講生詳細情報を取得
+  public StudentDetail getStudentDetail(int studentId) {
+    Student student = studentRepository.findStudentById(studentId);
     if (student == null) {
-      throw new IllegalArgumentException("指定されたIDの受講生が見つかりません: " + id);
+      throw new IllegalArgumentException("指定されたIDの受講生が見つかりません: " + studentId);
     }
 
-    // 受講生コース情報を取得
-    List<StudentCourse> courses = studentCourseRepository.findAllStudentCourses();
     List<StudentCourse> studentCourses = new ArrayList<>();
-    for (StudentCourse course : courses) {
-      if (course.getStudentId() == id) {
+    for (StudentCourse course : studentCourseRepository.findAllStudentCourses()) {
+      if (course.getStudentId() == studentId) {
         studentCourses.add(course);
       }
     }
 
-    // StudentDetail に受講生情報とコース情報をセット
     StudentDetail studentDetail = new StudentDetail();
     studentDetail.setStudent(student);
     studentDetail.setStudentCourseList(studentCourses);
@@ -61,41 +57,44 @@ public class StudentService {
     return studentDetail;
   }
 
-  // 受講生情報を更新
-  public void updateStudent(int id, Student student, boolean cancelFlag) {
-    student.setId(id);  // IDを設定してから更新
-    // キャンセルフラグがチェックされていた場合、削除フラグを設定
+  // 書き込み：受講生情報の更新
+  @Transactional
+  public void updateStudentDetails(int studentId, Student student, boolean cancelFlag) {
+    student.setId(studentId);
     if (cancelFlag) {
-      student.setDeletedFlag(true);  // キャンセルされた受講生は削除フラグを立てる
+      student.setDeletedFlag(true);
     }
-    repository.updateStudent(id, student);  // 削除フラグを含む情報を更新
+    studentRepository.updateStudent(studentId, student);
   }
 
-  // 受講生コース情報を更新
+  // 書き込み：複数の受講生コース情報を更新
+  @Transactional
   public void updateStudentCourses(int studentId, List<StudentCourse> studentCourses) {
     for (StudentCourse course : studentCourses) {
-      // 各コースに対してstudentIdを設定して更新する処理を追加
       course.setStudentId(studentId);
       studentCourseRepository.updateStudentCourse(course);
     }
   }
-  // 受講生コース情報を更新（単一のコース用）
-  public void updateStudentCourse(StudentCourse studentCourse) {
+
+  // 書き込み：単一の受講生コース情報を更新
+  @Transactional
+  public void updateSingleStudentCourse(StudentCourse studentCourse) {
     studentCourseRepository.updateStudentCourse(studentCourse);
   }
 
-
-  // 受講生登録
-  public void registerStudent(StudentDetail studentDetail) {
+  // 書き込み：受講生情報を新規登録
+  @Transactional
+  public void registerNewStudent(StudentDetail studentDetail) {
     if (studentDetail.getStudent() != null) {
-      repository.insertStudent(studentDetail.getStudent());
+      studentRepository.insertStudent(studentDetail.getStudent());
     } else {
       throw new IllegalArgumentException("StudentDetail に Student オブジェクトが含まれていません");
     }
   }
 
-  // 受講生コース情報を新規登録
-  public void insertStudentCourse(StudentCourse studentCourse) {
+  // 書き込み：受講生コース情報を新規登録
+  @Transactional
+  public void registerNewStudentCourse(StudentCourse studentCourse) {
     studentCourseRepository.insertStudentCourse(studentCourse);
   }
 }

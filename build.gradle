@@ -27,6 +27,19 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	// Thymeleaf
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	// Validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	dependencies {
+		// Jakarta Bean Validation API（@Valid, @Size, @NotNull などを使うため）
+		implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+
+		// Hibernate Validator（Jakarta Validation の実装ライブラリ）
+		implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
+
+		// Bean Validation をサポートするためのアノテーションプロセッサ（オプション）
+		annotationProcessor 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
+	}
+
 	// apache commons lang 便利機能
 	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.17.0'
     // Lombok

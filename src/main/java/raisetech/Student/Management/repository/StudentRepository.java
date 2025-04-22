@@ -42,28 +42,11 @@ public interface StudentRepository {
   List<StudentCourse> findJavaCourses();
 
   /**
-   * 全受講生のコース情報を取得します。
-   * @return 全受講生とそのコース情報の一覧
-   */
-  @Select("SELECT * FROM student_course")
-  List<StudentCourse> findAllStudentCourses();
-
-  /**
-   * 新しい受講生を登録します。
-   * @param student 追加する受講生情報
-   */
-  @Insert("""
-    INSERT INTO students (full_name, furigana, nickname, email, city, age, gender, remarks, deleted_flag)
-    VALUES (#{fullName}, #{furigana}, #{nickname}, #{email}, #{city}, #{age}, #{gender}, #{remarks}, false)
-  """)
-  void insertStudent(Student student);
-
-  /**
    * 受講生IDを指定して受講生情報を取得します。
    * @param id 受講生ID
    * @return 指定されたIDの受講生情報
    */
-  @Select("SELECT * FROM students WHERE id = #{id}")
+  @Select("SELECT * FROM students WHERE id = #{id} AND deleted_flag = false")
   Student findStudentById(int id);
 
   /**
@@ -86,18 +69,8 @@ public interface StudentRepository {
   """)
   void updateStudent(@Param("id") int id, @Param("student") Student student);
 
-  /**
-   * 受講生コース情報を更新します。
-   * @param studentCourse 更新する受講生のコース情報
-   */
-  @Update("""
-    UPDATE student_course
-    SET course_name = #{courseName},
-        start_date = #{startDate},
-        end_date = #{endDate}
-    WHERE student_id = #{studentId}
-  """)
-  void updateStudentCourse(StudentCourse studentCourse);
+
+
 
   /**
    * 受講生コース情報を新規登録します。
@@ -108,4 +81,12 @@ public interface StudentRepository {
     VALUES (#{studentId}, #{courseName}, #{startDate}, #{endDate})
   """)
   void insertStudentCourse(StudentCourse studentCourse);
+
+  @Insert("""
+  INSERT INTO students (full_name, furigana, nickname, email, city, age, gender, remark, deleted_flag)
+  VALUES (#{fullName}, #{furigana}, #{nickname}, #{email}, #{city}, #{age}, #{gender}, #{remark}, #{deletedFlag})
+""")
+  void insertStudent(Student student);
+
 }
+
