@@ -20,5 +20,3 @@ public class StudentDetail {
     this.studentCourseList = new ArrayList<>();
   }
 }
-
-
