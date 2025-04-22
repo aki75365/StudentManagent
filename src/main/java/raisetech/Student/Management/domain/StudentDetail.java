@@ -19,4 +19,4 @@ public class StudentDetail {
     this.student = new Student();
     this.studentCourseList = new ArrayList<>();
   }
-}
+ 
