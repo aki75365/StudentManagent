@@ -10,7 +10,7 @@ import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
 import raisetech.Student.Management.service.StudentService;
 import org.springframework.http.ResponseEntity;
-
+import jakarta.validation.constraints.Size;
 
 @RestController
 public class StudentViewController {
@@ -69,13 +69,16 @@ public class StudentViewController {
   // 受講生情報を更新処理
   @PutMapping("/{studentId}")
   public ResponseEntity<String> updateStudent(
-      @PathVariable String studentId,
+      @PathVariable @Size(min = 1, max = 3, message = "studentIdは1〜3桁の数字で指定してください") String studentId,
       @RequestBody Student student
   ) {
     try {
       int id = Integer.parseInt(studentId);
-      boolean deletedFlag = student.isDeletedFlag(); // ← ここで取得
-      studentService.updateStudentDetails(id, student, deletedFlag); // ← ここで渡す
+      student.setId(id); // IDをStudentにセット
+
+      // 削除フラグ（deletedFlag）はすでにStudentに含まれていると仮定
+      studentService.updateStudentDetails(student);
+
       return ResponseEntity.ok("更新が完了しました");
     } catch (NumberFormatException e) {
       return ResponseEntity.badRequest().body("studentIdは数値で指定してください");

@@ -59,13 +59,11 @@ public class StudentService {
 
   // 書き込み：受講生情報の更新
   @Transactional
-  public void updateStudentDetails(int studentId, Student student, boolean cancelFlag) {
-    student.setId(studentId);
-    if (cancelFlag) {
-      student.setDeletedFlag(true);
-    }
+  public void updateStudentDetails(Student student) {
+    int studentId = student.getId(); // IDもオブジェクトから取得
     studentRepository.updateStudent(studentId, student);
   }
+
 
   // 書き込み：複数の受講生コース情報を更新
   @Transactional
