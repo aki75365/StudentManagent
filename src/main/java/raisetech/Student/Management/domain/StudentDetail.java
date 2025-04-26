@@ -19,4 +19,14 @@ public class StudentDetail {
     this.student = new Student();
     this.studentCourseList = new ArrayList<>();
   }
- 
+
+  // コースリストを簡単に追加できるようにする
+  public void addCourse(StudentCourse course) {
+    if (this.studentCourseList == null) {
+      this.studentCourseList = new ArrayList<>();
+    }
+    this.studentCourseList.add(course);
+  }
+}
+
+
