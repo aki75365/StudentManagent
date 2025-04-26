@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
 import raisetech.Student.Management.domain.StudentDetail;
-import raisetech.Student.Management.exception.StudentNotFoundException; // ← 追加
+import raisetech.Student.Management.exception.StudentNotFoundException;
 import raisetech.Student.Management.service.StudentService;
 import jakarta.validation.constraints.Size;
 
@@ -42,6 +42,8 @@ public class StudentApiController {
       return ResponseEntity.ok(detail);
     } catch (NumberFormatException e) {
       return ResponseEntity.badRequest().body(null); // 数字以外が渡された場合
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.notFound().build();
     }
   }
 
@@ -65,7 +67,7 @@ public class StudentApiController {
     }
   }
 
-  // 新規受講生登録
+  // 新規受講生登録（Student + Course情報）
   @PostMapping
   public ResponseEntity<String> createStudent(@RequestBody StudentDetail studentDetail) {
     try {
@@ -92,20 +94,12 @@ public class StudentApiController {
     return studentService.getCoursesByStudentId(studentId);
   }
 
-  // 受講生コース情報の新規登録
+  // 受講生コース情報の新規登録（個別）
   @PostMapping("/{studentId}/courses")
   public ResponseEntity<String> registerCourse(@PathVariable int studentId, @RequestBody StudentCourse course) {
     course.setStudentId(studentId);
     studentService.registerNewStudentCourse(course);
     return ResponseEntity.status(201).body("コース情報を追加しました");
   }
-
-  // StudentNotFoundException に対応する例外ハンドラー
-  @ExceptionHandler(StudentNotFoundException.class)
-  public ResponseEntity<String> handleStudentNotFoundException(StudentNotFoundException ex) {
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-  }
 }
-
-
 
