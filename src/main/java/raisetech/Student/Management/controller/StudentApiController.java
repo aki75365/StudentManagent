@@ -1,12 +1,14 @@
 package raisetech.Student.Management.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
 import raisetech.Student.Management.domain.StudentDetail;
+import raisetech.Student.Management.exception.StudentNotFoundException;
 import raisetech.Student.Management.service.StudentService;
 import jakarta.validation.constraints.Size;
 
@@ -45,7 +47,7 @@ public class StudentApiController {
     }
   }
 
-  // 受講生情報の更新（競合している@PutMappingを1つに修正）
+  // 受講生情報の更新
   @PutMapping("/{studentId}")
   public ResponseEntity<String> updateStudent(
       @PathVariable @Size(min = 1, max = 3, message = "studentIdは1〜3桁の数字で指定してください") String studentId,
@@ -57,6 +59,8 @@ public class StudentApiController {
       return ResponseEntity.ok("更新が完了しました");
     } catch (NumberFormatException e) {
       return ResponseEntity.badRequest().body("studentIdは数値で指定してください");
+    } catch (StudentNotFoundException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     } catch (Exception e) {
       return ResponseEntity.badRequest().body("更新に失敗しました: " + e.getMessage());
     }
@@ -98,3 +102,4 @@ public class StudentApiController {
     return ResponseEntity.status(201).body("コース情報を追加しました");
   }
 }
+

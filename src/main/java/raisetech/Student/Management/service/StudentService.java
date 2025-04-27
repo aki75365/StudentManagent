@@ -8,6 +8,7 @@ import raisetech.Student.Management.data.StudentCourse;
 import raisetech.Student.Management.domain.StudentDetail;
 import raisetech.Student.Management.repository.StudentRepository;
 import raisetech.Student.Management.repository.StudentCourseRepository;
+import raisetech.Student.Management.exception.StudentNotFoundException; // ← 追加
 
 import java.util.List;
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class StudentService {
   public StudentDetail getStudentDetail(int studentId) {
     Student student = studentRepository.findStudentById(studentId);
     if (student == null) {
-      throw new IllegalArgumentException("指定されたIDの受講生が見つかりません: " + studentId);
+      throw new StudentNotFoundException("指定されたIDの受講生が見つかりません: " + studentId); // ← ここを変更
     }
 
     List<StudentCourse> studentCourses = new ArrayList<>();
