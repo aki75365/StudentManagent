@@ -35,7 +35,7 @@ public class StudentApiController {
     return studentService.getAllStudents();
   }
 
-  @GetMapping("/{studentId}")
+@GetMapping("/{studentId}")
   @Operation(summary = "受講生詳細情報の取得", description = "指定したIDの受講生の詳細情報を取得します。")
   public ResponseEntity<StudentDetail> getStudentDetail(
       @PathVariable @Size(min = 1, max = 3, message = "studentIdは1〜3桁の数字で指定してください") String studentId) {
@@ -52,12 +52,11 @@ public class StudentApiController {
   @Operation(summary = "受講生情報の更新", description = "指定したIDの受講生情報を更新します。")
   public ResponseEntity<String> updateStudent(
       @PathVariable @Size(min = 1, max = 3, message = "studentIdは1〜3桁の数字で指定してください") String studentId,
-      @RequestBody Student student,
-      @RequestParam(defaultValue = "false") boolean cancel
+      @RequestBody Student student
   ) {
     try {
       int id = Integer.parseInt(studentId);
-      studentService.updateStudentDetails(id, student, cancel);
+      studentService.updateStudentDetails(id, student, false); // ← false を明示
       return ResponseEntity.ok("更新が完了しました");
     } catch (NumberFormatException e) {
       return ResponseEntity.badRequest().body("studentIdは数値で指定してください");
@@ -67,6 +66,7 @@ public class StudentApiController {
       return ResponseEntity.badRequest().body("更新に失敗しました: " + e.getMessage());
     }
   }
+
 
   @PostMapping
   @Operation(summary = "新規受講生の登録", description = "新しい受講生情報を登録します。")
@@ -95,6 +95,7 @@ public class StudentApiController {
     return studentService.getCoursesByStudentId(studentId);
   }
 
+
   @PostMapping("/{studentId}/courses")
   @Operation(summary = "受講生コース情報の新規登録", description = "指定した受講生IDに新しいコース情報を登録します。")
   public ResponseEntity<String> registerCourse(@PathVariable int studentId, @RequestBody StudentCourse course) {
@@ -102,7 +103,7 @@ public class StudentApiController {
     studentService.registerNewStudentCourse(course);
     return ResponseEntity.status(201).body("コース情報を追加しました");
   }
-
+  
   @ExceptionHandler(StudentNotFoundException.class)
   public ResponseEntity<String> handleStudentNotFoundException(StudentNotFoundException ex) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
