@@ -20,6 +20,13 @@ public class StudentCourse {
     this.endDate = endDate;
   }
 
+  // 新たに追加したコンストラクタ
+  public StudentCourse(int studentId, int id, String courseName) {
+    this.studentId = studentId;
+    this.id = id;               // コースID
+    this.courseName = courseName; // コース名
+  }
+
   // ゲッターとセッター
   public int getId() { return id; }
   public void setId(int id) { this.id = id; }
