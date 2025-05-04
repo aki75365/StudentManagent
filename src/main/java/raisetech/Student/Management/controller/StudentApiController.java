@@ -1,5 +1,7 @@
 package raisetech.Student.Management.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag; // ← 追加
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import java.util.List;
 @Validated
 @RestController
 @RequestMapping("/api/students")
+@Tag(name = "Student API", description = "受講生とコース情報を管理するAPI") // ← 追加
 public class StudentApiController {
 
   private final StudentService studentService;
@@ -26,14 +29,14 @@ public class StudentApiController {
     this.studentService = studentService;
   }
 
-  // 全受講生情報の取得
   @GetMapping
+  @Operation(summary = "全受講生情報の取得", description = "登録されている全ての受講生情報を取得します。")
   public List<Student> getAllStudents() {
     return studentService.getAllStudents();
   }
 
-  // 受講生詳細情報の取得
   @GetMapping("/{studentId}")
+  @Operation(summary = "受講生詳細情報の取得", description = "指定したIDの受講生の詳細情報を取得します。")
   public ResponseEntity<StudentDetail> getStudentDetail(
       @PathVariable @Size(min = 1, max = 3, message = "studentIdは1〜3桁の数字で指定してください") String studentId) {
     try {
@@ -41,14 +44,13 @@ public class StudentApiController {
       StudentDetail detail = studentService.getStudentDetail(id);
       return ResponseEntity.ok(detail);
     } catch (NumberFormatException e) {
-      return ResponseEntity.badRequest().body(null); // 数字以外が渡された場合
-    } catch (IllegalArgumentException e) {
-      return ResponseEntity.notFound().build();
+      return ResponseEntity.badRequest().body(null);
+
     }
   }
 
-  // 受講生情報の更新
   @PutMapping("/{studentId}")
+  @Operation(summary = "受講生情報の更新", description = "指定したIDの受講生情報を更新します。")
   public ResponseEntity<String> updateStudent(
       @PathVariable @Size(min = 1, max = 3, message = "studentIdは1〜3桁の数字で指定してください") String studentId,
       @RequestBody Student student
@@ -67,8 +69,8 @@ public class StudentApiController {
   }
 
 
-  // 新規受講生登録（Student + Course情報）
   @PostMapping
+  @Operation(summary = "新規受講生の登録", description = "新しい受講生情報を登録します。")
   public ResponseEntity<String> createStudent(@RequestBody StudentDetail studentDetail) {
     try {
       studentService.registerNewStudent(studentDetail);
@@ -78,8 +80,8 @@ public class StudentApiController {
     }
   }
 
-  // 受講生コース情報の更新
   @PutMapping("/{studentId}/courses")
+  @Operation(summary = "受講生コース情報の更新", description = "指定した受講生IDに対して、コース情報を更新します。")
   public ResponseEntity<String> updateStudentCourses(
       @PathVariable int studentId,
       @RequestBody List<StudentCourse> studentCourses
@@ -88,18 +90,25 @@ public class StudentApiController {
     return ResponseEntity.ok("コース情報の更新が完了しました");
   }
 
-  // 受講生のコース情報の取得
   @GetMapping("/{studentId}/courses")
+  @Operation(summary = "受講生のコース情報取得", description = "指定した受講生IDに紐づくコース情報を取得します。")
   public List<StudentCourse> getStudentCourses(@PathVariable int studentId) {
     return studentService.getCoursesByStudentId(studentId);
   }
 
-  // 受講生コース情報の新規登録（個別）
+
   @PostMapping("/{studentId}/courses")
+  @Operation(summary = "受講生コース情報の新規登録", description = "指定した受講生IDに新しいコース情報を登録します。")
   public ResponseEntity<String> registerCourse(@PathVariable int studentId, @RequestBody StudentCourse course) {
     course.setStudentId(studentId);
     studentService.registerNewStudentCourse(course);
     return ResponseEntity.status(201).body("コース情報を追加しました");
+  }
+
+
+  @ExceptionHandler(StudentNotFoundException.class)
+  public ResponseEntity<String> handleStudentNotFoundException(StudentNotFoundException ex) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
   }
 }
 
