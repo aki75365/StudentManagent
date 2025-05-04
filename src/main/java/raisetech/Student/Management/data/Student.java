@@ -20,6 +20,15 @@ public class Student {
   private String remarks;
   private boolean deletedFlag; // 削除フラグ
 
+  // 引数なしのコンストラクタ
+  public Student() {}
+
+  // 引数付きのコンストラクタ (id, fullName)
+  public Student(int id, String fullName) {
+    this.id = id;
+    this.fullName = fullName;
+  }
+
   // isDeletedFlag メソッドを追加
   public boolean isDeletedFlag() {
     return deletedFlag;
