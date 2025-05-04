@@ -58,13 +58,24 @@ public class StudentService {
     return studentDetail;
   }
 
-  // 書き込み：受講生情報の更新
+  // 書き込み：受講生情報の更新（既存の1引数版）
   @Transactional
   public void updateStudentDetails(Student student) {
     int studentId = student.getId(); // IDもオブジェクトから取得
     studentRepository.updateStudent(studentId, student);
   }
 
+  // 追加する新しいメソッド
+  @Transactional
+  public void updateStudentDetails(int id, Student student, boolean cancelFlag) {
+    // 削除フラグを設定する処理
+    if (cancelFlag) {
+      student.setDeletedFlag(true); // 削除フラグを立てる
+    }
+
+    // 学生情報を更新
+    studentRepository.updateStudent(id, student);
+  }
 
   // 書き込み：複数の受講生コース情報を更新
   @Transactional
