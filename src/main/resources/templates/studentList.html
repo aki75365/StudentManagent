@@ -23,19 +23,19 @@
   </thead>
   <tbody>
   <!-- 削除フラグがfalseの受講生を表示 -->
-  <tr th:each="student : ${studentList}" th:if="!${student.student.deletedFlag}">
-    <td th:text="${student.student.id}"></td>
+  <tr th:each="student : ${studentList}" th:if="${student.deletedFlag == false}">
+    <td th:text="${student.id}"></td>
     <td>
-      <a th:href="@{/studentDetail/{id}(id=${student.student.id})}" th:text="${student.student.fullName}"></a>
+      <a th:href="@{/studentDetail/{id}(id=${student.id})}" th:text="${student.fullName}"></a>
     </td>
-    <td th:text="${student.student.furigana}"></td>
-    <td th:text="${student.student.nickname}"></td>
-    <td th:text="${student.student.email}"></td>
-    <td th:text="${student.student.city}"></td>
-    <td th:text="${student.student.age}"></td>
-    <td th:text="${student.student.gender}"></td>
+    <td th:text="${student.furigana}"></td>
+    <td th:text="${student.nickname}"></td>
+    <td th:text="${student.email}"></td>
+    <td th:text="${student.city}"></td>
+    <td th:text="${student.age}"></td>
+    <td th:text="${student.gender}"></td>
     <td>
-      <span th:text="${student.student.deletedFlag ? '削除' : 'アクティブ'}"></span>
+      <span th:text="${student.deletedFlag ? '削除' : 'アクティブ'}"></span>
     </td>
   </tr>
   </tbody>

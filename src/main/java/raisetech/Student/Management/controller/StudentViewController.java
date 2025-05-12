@@ -10,8 +10,10 @@ import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
 import raisetech.Student.Management.service.StudentService;
 
-@RestController
+// 修正後
+@Controller
 public class StudentViewController {
+
 
   private final StudentService studentService;
 
