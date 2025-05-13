@@ -15,6 +15,7 @@ public class StudentConverterTest {
 
   private final StudentConverter converter = new StudentConverter();
 
+  //1人の受講生に複数のコースがある場合、正しく紐づけて StudentDetail に変換されるかを確認する。
   @Test
   public void testConvertStudentDetails_singleStudentWithCourses() {
     Student student = new Student();
@@ -40,6 +41,7 @@ public class StudentConverterTest {
     assertEquals(2, detail.getStudentCourseList().size());
   }
 
+  //複数の受講生がいる場合でも、それぞれの受講生に正しく対応するコースが紐づくかを確認する。
   @Test
   public void testConvertStudentDetails_multipleStudents() {
     Student student1 = new Student();
@@ -68,6 +70,7 @@ public class StudentConverterTest {
     assertEquals("Java", result.get(0).getStudentCourseList().get(0).getCourseName());
   }
 
+  //受講生には存在しない studentId のコースがあった場合、該当の受講生にはコースが紐づかないことを確認する。
   @Test
   public void testConvertStudentDetails_noMatchingCourses() {
     Student student = new Student();
@@ -87,6 +90,7 @@ public class StudentConverterTest {
     assertTrue(result.get(0).getStudentCourseList().isEmpty());
   }
 
+  //空のリストを渡した場合でも、例外が発生せず、空の結果が返るかを確認する。
   @Test
   public void testConvertStudentDetails_emptyInput() {
     List<StudentDetail> result = converter.convertStudentDetails(
