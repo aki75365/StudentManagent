@@ -29,12 +29,23 @@ public class Student {
     this.fullName = fullName;
   }
 
-  // isDeletedFlag メソッドを追加
+  // ★ テスト用：すべての情報を設定するコンストラクタ（remarks, deletedFlag は除外）
+  public Student(int id, String fullName, String furigana, String nickname,
+      String email, String city, int age, String gender) {
+    this.id = id;
+    this.fullName = fullName;
+    this.furigana = furigana;
+    this.nickname = nickname;
+    this.email = email;
+    this.city = city;
+    this.age = age;
+    this.gender = gender;
+  }
+
   public boolean isDeletedFlag() {
     return deletedFlag;
   }
 
-  // setDeletedFlag メソッドを追加（setter）
   public void setDeletedFlag(boolean deletedFlag) {
     this.deletedFlag = deletedFlag;
   }

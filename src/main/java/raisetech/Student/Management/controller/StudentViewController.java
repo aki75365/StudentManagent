@@ -12,8 +12,10 @@ import raisetech.Student.Management.service.StudentService;
 import org.springframework.http.ResponseEntity;
 import jakarta.validation.constraints.Size;
 
-@RestController
+// 修正後
+@Controller
 public class StudentViewController {
+
 
   private final StudentService studentService;
 
