@@ -17,6 +17,7 @@ import org.apache.ibatis.annotations.Options;
 @Mapper
 public interface StudentRepository {
 
+
   /**
    * 全件検索します。
    * @return 全件検索した受講生情報の一覧
@@ -91,6 +92,22 @@ public interface StudentRepository {
   @Options(useGeneratedKeys = true, keyProperty = "id")
   void insertStudent(Student student);
 
+  /**
+   * キーワードで受講生を検索します。
+   * フルネーム、フリガナ、ニックネーム、メールアドレスに部分一致します。
+   * @param keyword 検索キーワード
+   * @return 条件に一致する受講生リスト
+   */
+  @Select("""
+  SELECT * FROM students
+  WHERE deleted_flag = false AND (
+    full_name LIKE CONCAT('%', #{keyword}, '%') OR
+    furigana LIKE CONCAT('%', #{keyword}, '%') OR
+    nickname LIKE CONCAT('%', #{keyword}, '%') OR
+    email LIKE CONCAT('%', #{keyword}, '%')
+  )
+""")
+  List<Student> searchStudentsByKeyword(@Param("keyword") String keyword);
 
 }
 

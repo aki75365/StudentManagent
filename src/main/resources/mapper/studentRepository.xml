@@ -65,4 +65,14 @@
     )
   </insert>
 
+  <!-- 受講生検索 -->
+  <select id="searchByKeyword" resultType="raisetech.Student.Management.data.Student">
+    SELECT * FROM students
+    WHERE full_name LIKE CONCAT('%', #{keyword}, '%')
+    OR furigana LIKE CONCAT('%', #{keyword}, '%')
+    OR nickname LIKE CONCAT('%', #{keyword}, '%')
+  </select>
+
+
+
 </mapper>

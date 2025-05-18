@@ -28,6 +28,14 @@ public class StudentApiController {
   public StudentApiController(StudentService studentService) {
     this.studentService = studentService;
   }
+//受講生検索
+@GetMapping("/search")
+public List<Student> searchStudents(@RequestParam("keyword") String keyword) {
+  return studentService.searchStudents(keyword);
+}
+
+
+
 
   @GetMapping
   @Operation(summary = "全受講生情報の取得", description = "登録されている全ての受講生情報を取得します。")
@@ -68,7 +76,7 @@ public class StudentApiController {
     }
   }
 
-  @PostMapping
+  @PostMapping("/register")
   @Operation(summary = "新規受講生の登録", description = "新しい受講生情報を登録します。")
   public ResponseEntity<String> createStudent(@RequestBody StudentDetail studentDetail) {
     try {

@@ -22,6 +22,10 @@ public class StudentService {
   @Autowired
   private StudentCourseRepository studentCourseRepository;
 
+  public List<Student> searchStudents(String keyword) {
+    return studentRepository.searchStudentsByKeyword(keyword);
+  }
+
   // 読み取り：受講生情報を全件取得
   public List<Student> getAllStudents() {
     return studentRepository.searchAllStudents();
@@ -86,12 +90,28 @@ public class StudentService {
   // 書き込み：受講生情報を新規登録
   @Transactional
   public void registerNewStudent(StudentDetail studentDetail) {
-    if (studentDetail.getStudent() != null) {
-      studentRepository.insertStudent(studentDetail.getStudent());
-    } else {
+    Student student = studentDetail.getStudent();
+    List<StudentCourse> courseList = studentDetail.getStudentCourseList();
+
+    if (student == null) {
       throw new IllegalArgumentException("StudentDetail に Student オブジェクトが含まれていません");
     }
+
+    // 1. 受講生を登録
+    studentRepository.insertStudent(student);
+
+    // 2. 登録後のIDを取得
+    int studentId = student.getId();
+
+    // 3. コース情報があれば受講生IDをセットして登録
+    if (courseList != null && !courseList.isEmpty()) {
+      for (StudentCourse course : courseList) {
+        course.setStudentId(studentId);
+        studentCourseRepository.insertStudentCourse(course);
+      }
+    }
   }
+
 
   // 書き込み：受講生コース情報を新規登録
   @Transactional
