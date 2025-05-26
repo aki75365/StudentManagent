@@ -115,4 +115,12 @@ public List<Student> searchStudents(@RequestParam("keyword") String keyword) {
   public ResponseEntity<String> handleStudentNotFoundException(StudentNotFoundException ex) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
   }
+  @GetMapping("/gender/{gender}")
+  public List<Student> getStudentsByGender(@PathVariable String gender) {
+    return studentService.findStudentsByGender(gender);
+  }
+  @GetMapping("/course/{courseName}")
+  public List<StudentCourse> getStudentsByCourseName(@PathVariable String courseName) {
+    return studentService.findStudentsByCourseName(courseName);
+  }
 }

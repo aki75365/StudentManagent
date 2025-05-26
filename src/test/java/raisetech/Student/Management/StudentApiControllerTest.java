@@ -105,4 +105,16 @@ class StudentApiControllerTest {
             .content(courseJson))
         .andExpect(status().isCreated());
   }
+
+  // ⑤ 性別で受講生検索のテストを追加
+  @Test
+  void shouldReturnStudentsByGender() throws Exception {
+    Mockito.when(studentService.findStudentsByGender("Male"))
+        .thenReturn(List.of(new Student()));
+
+    mockMvc.perform(get("/api/students/gender")
+            .param("gender", "Male"))
+        .andExpect(status().isOk());
+  }
+
 }

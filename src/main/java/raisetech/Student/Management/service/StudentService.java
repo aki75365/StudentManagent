@@ -112,10 +112,18 @@ public class StudentService {
     }
   }
 
-
   // 書き込み：受講生コース情報を新規登録
   @Transactional
   public void registerNewStudentCourse(StudentCourse studentCourse) {
     studentCourseRepository.insertStudentCourse(studentCourse);
+  }
+
+  // 追加: 性別で受講生検索
+  public List<Student> findStudentsByGender(String gender) {
+    return studentRepository.findStudentsByGender(gender);
+  }
+  // 追加: コース名で受講生検索
+  public List<StudentCourse> findStudentsByCourseName(String courseName) {
+    return studentRepository.findStudentsByCourseName(courseName);
   }
 }
