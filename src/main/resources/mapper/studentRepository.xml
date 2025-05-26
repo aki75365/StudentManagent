@@ -47,12 +47,14 @@
   <!-- 新規受講生の登録 -->
   <insert id="insertStudent" parameterType="raisetech.Student.Management.data.Student">
     INSERT INTO students (
-    full_name, furigana, nickname, email, city, age, gender, remark, deleted_flag
+    full_name, furigana, nickname, email, city, age, gender, remarks, deleted_flag
     ) VALUES (
     #{fullName}, #{furigana}, #{nickname}, #{email}, #{city},
-    #{age}, #{gender}, #{remark}, #{deletedFlag}
+    #{age}, #{gender}, #{remarks}, #{deletedFlag}
     )
   </insert>
+
+
 
   <!-- 新規コースの登録 -->
   <insert id="insertStudentCourse" parameterType="raisetech.Student.Management.data.StudentCourse">

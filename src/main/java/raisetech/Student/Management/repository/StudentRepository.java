@@ -8,6 +8,8 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
+import org.apache.ibatis.annotations.Options;
+
 
 /**
  * 受講生情報を扱うリポジトリ
@@ -83,10 +85,12 @@ public interface StudentRepository {
   void insertStudentCourse(StudentCourse studentCourse);
 
   @Insert("""
-  INSERT INTO students (full_name, furigana, nickname, email, city, age, gender, remark, deleted_flag)
-  VALUES (#{fullName}, #{furigana}, #{nickname}, #{email}, #{city}, #{age}, #{gender}, #{remark}, #{deletedFlag})
+  INSERT INTO students (full_name, furigana, nickname, email, city, age, gender, remarks, deleted_flag)
+  VALUES (#{fullName}, #{furigana}, #{nickname}, #{email}, #{city}, #{age}, #{gender}, #{remarks}, #{deletedFlag})
 """)
+  @Options(useGeneratedKeys = true, keyProperty = "id")
   void insertStudent(Student student);
+
 
 }
 
