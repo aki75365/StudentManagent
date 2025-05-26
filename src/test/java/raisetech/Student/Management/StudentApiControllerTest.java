@@ -116,5 +116,5 @@ class StudentApiControllerTest {
             .param("gender", "Male"))
         .andExpect(status().isOk());
   }
-//コンフリクト解消のためテスト
+//コンフリクト解消のためテスト２
 }
