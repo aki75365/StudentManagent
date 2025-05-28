@@ -9,6 +9,8 @@ import raisetech.Student.Management.domain.StudentDetail;
 import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
 import raisetech.Student.Management.service.StudentService;
+import org.springframework.http.ResponseEntity;
+import jakarta.validation.constraints.Size;
 
 // 修正後
 @Controller
@@ -67,14 +69,24 @@ public class StudentViewController {
   }
 
   // 受講生情報を更新処理
-  @PostMapping("/update")
-  public String updateStudent(@ModelAttribute("studentDetail") StudentDetail studentDetail) {
-    Student student = studentDetail.getStudent();
-    int studentId = student.getId(); // ← 修正ポイント（int型で統一）
+  @PutMapping("/{studentId}")
+  public ResponseEntity<String> updateStudent(
+      @PathVariable @Size(min = 1, max = 3, message = "studentIdは1〜3桁の数字で指定してください") String studentId,
+      @RequestBody Student student
+  ) {
+    try {
+      int id = Integer.parseInt(studentId);
+      student.setId(id); // IDをStudentにセット
 
-    studentService.updateStudentDetails(studentId, student, false);
-    studentService.updateStudentCourses(studentId, studentDetail.getStudentCourseList());
+      // 削除フラグ（deletedFlag）はすでにStudentに含まれていると仮定
+      studentService.updateStudentDetails(student);
 
-    return "redirect:/students";
+      return ResponseEntity.ok("更新が完了しました");
+    } catch (NumberFormatException e) {
+      return ResponseEntity.badRequest().body("studentIdは数値で指定してください");
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body("更新に失敗しました: " + e.getMessage());
+    }
   }
 }
+

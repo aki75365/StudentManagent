@@ -1,5 +1,8 @@
 package raisetech.Student.Management.data;
 
+import java.util.Objects;
+
+
 public class StudentCourse {
   private int id;               // コースID
   private int studentId;         // 受講生ID
@@ -54,4 +57,22 @@ public class StudentCourse {
         ", endDate='" + endDate + '\'' +
         '}';
   }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    StudentCourse that = (StudentCourse) o;
+    return id == that.id &&
+        studentId == that.studentId &&
+        Objects.equals(courseName, that.courseName) &&
+        Objects.equals(startDate, that.startDate) &&
+        Objects.equals(endDate, that.endDate);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, studentId, courseName, startDate, endDate);
+  }
+
+
 }
