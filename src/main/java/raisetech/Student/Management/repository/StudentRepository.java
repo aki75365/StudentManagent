@@ -10,31 +10,18 @@ import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
 import org.apache.ibatis.annotations.Options;
 
-
 /**
  * 受講生情報を扱うリポジトリ
  */
 @Mapper
 public interface StudentRepository {
 
-  /**
-   * 全件検索します。
-   * @return 全件検索した受講生情報の一覧
-   */
   @Select("SELECT * FROM students WHERE deleted_flag = false")
   List<Student> searchAllStudents();
 
-  /**
-   * 30代の受講生を検索します。
-   * @return 30代の受講生情報の一覧
-   */
   @Select("SELECT * FROM students WHERE age BETWEEN 30 AND 39")
   List<Student> findStudentsInTheir30s();
 
-  /**
-   * JAVAコースの受講生を検索します。
-   * @return JAVAコースを受講する受講生情報の一覧
-   */
   @Select("""
       SELECT s.id AS studentId, s.full_name, c.course_name, c.start_date, c.end_date
       FROM students s
@@ -43,19 +30,9 @@ public interface StudentRepository {
   """)
   List<StudentCourse> findJavaCourses();
 
-  /**
-   * 受講生IDを指定して受講生情報を取得します。
-   * @param id 受講生ID
-   * @return 指定されたIDの受講生情報
-   */
   @Select("SELECT * FROM students WHERE id = #{id} AND deleted_flag = false")
   Student findStudentById(int id);
 
-  /**
-   * 受講生情報を更新します。
-   * @param id 現在の受講生ID
-   * @param student 更新する受講生情報
-   */
   @Update("""
   UPDATE students
   SET full_name = #{student.fullName},
@@ -71,13 +48,6 @@ public interface StudentRepository {
   """)
   void updateStudent(@Param("id") int id, @Param("student") Student student);
 
-
-
-
-  /**
-   * 受講生コース情報を新規登録します。
-   * @param studentCourse 新規登録する受講生のコース情報
-   */
   @Insert("""
     INSERT INTO student_course (student_id, course_name, start_date, end_date)
     VALUES (#{studentId}, #{courseName}, #{startDate}, #{endDate})
@@ -87,10 +57,35 @@ public interface StudentRepository {
   @Insert("""
   INSERT INTO students (full_name, furigana, nickname, email, city, age, gender, remarks, deleted_flag)
   VALUES (#{fullName}, #{furigana}, #{nickname}, #{email}, #{city}, #{age}, #{gender}, #{remarks}, #{deletedFlag})
-""")
+  """)
   @Options(useGeneratedKeys = true, keyProperty = "id")
   void insertStudent(Student student);
 
+  @Select("""
+  SELECT * FROM students
+  WHERE deleted_flag = false AND (
+    full_name LIKE CONCAT('%', #{keyword}, '%') OR
+    furigana LIKE CONCAT('%', #{keyword}, '%') OR
+    nickname LIKE CONCAT('%', #{keyword}, '%') OR
+    email LIKE CONCAT('%', #{keyword}, '%')
+  )
+  """)
+  List<Student> searchStudentsByKeyword(@Param("keyword") String keyword);
+
+  // 性別検索
+  @Select("""
+  SELECT * FROM students
+  WHERE gender = #{gender} AND deleted_flag = false
+  """)
+  List<Student> findStudentsByGender(@Param("gender") String gender);
+
+  //コース検索
+  @Select("""
+  SELECT s.id AS studentId, s.full_name, c.course_name, c.start_date, c.end_date
+  FROM students s
+  JOIN student_course c ON s.id = c.student_id
+  WHERE c.course_name = #{courseName}
+  """)
+  List<StudentCourse> findStudentsByCourseName(@Param("courseName") String courseName);
 
 }
-

@@ -22,6 +22,10 @@ public class StudentService {
   @Autowired
   private StudentCourseRepository studentCourseRepository;
 
+  public List<Student> searchStudents(String keyword) {
+    return studentRepository.searchStudentsByKeyword(keyword);
+  }
+
   // 読み取り：受講生情報を全件取得
   public List<Student> getAllStudents() {
     return studentRepository.searchAllStudents();
@@ -58,14 +62,23 @@ public class StudentService {
     return studentDetail;
   }
 
-  // 書き込み：受講生情報の更新
+  // 書き込み：受講生情報の更新（既存の1引数版）
   @Transactional
-  public void updateStudentDetails(int studentId, Student student, boolean cancelFlag) {
-    student.setId(studentId);
-    if (cancelFlag) {
-      student.setDeletedFlag(true);
-    }
+  public void updateStudentDetails(Student student) {
+    int studentId = student.getId(); // IDもオブジェクトから取得
     studentRepository.updateStudent(studentId, student);
+  }
+
+  // 追加する新しいメソッド
+  @Transactional
+  public void updateStudentDetails(int id, Student student, boolean cancelFlag) {
+    // 削除フラグを設定する処理
+    if (cancelFlag) {
+      student.setDeletedFlag(true); // 削除フラグを立てる
+    }
+
+    // 学生情報を更新
+    studentRepository.updateStudent(id, student);
   }
 
   // 書き込み：複数の受講生コース情報を更新
@@ -86,10 +99,25 @@ public class StudentService {
   // 書き込み：受講生情報を新規登録
   @Transactional
   public void registerNewStudent(StudentDetail studentDetail) {
-    if (studentDetail.getStudent() != null) {
-      studentRepository.insertStudent(studentDetail.getStudent());
-    } else {
+    Student student = studentDetail.getStudent();
+    List<StudentCourse> courseList = studentDetail.getStudentCourseList();
+
+    if (student == null) {
       throw new IllegalArgumentException("StudentDetail に Student オブジェクトが含まれていません");
+    }
+
+    // 1. 受講生を登録
+    studentRepository.insertStudent(student);
+
+    // 2. 登録後のIDを取得
+    int studentId = student.getId();
+
+    // 3. コース情報があれば受講生IDをセットして登録
+    if (courseList != null && !courseList.isEmpty()) {
+      for (StudentCourse course : courseList) {
+        course.setStudentId(studentId);
+        studentCourseRepository.insertStudentCourse(course);
+      }
     }
   }
 
@@ -97,5 +125,14 @@ public class StudentService {
   @Transactional
   public void registerNewStudentCourse(StudentCourse studentCourse) {
     studentCourseRepository.insertStudentCourse(studentCourse);
+  }
+
+  // 追加: 性別で受講生検索
+  public List<Student> findStudentsByGender(String gender) {
+    return studentRepository.findStudentsByGender(gender);
+  }
+  // 追加: コース名で受講生検索
+  public List<StudentCourse> findStudentsByCourseName(String courseName) {
+    return studentRepository.findStudentsByCourseName(courseName);
   }
 }

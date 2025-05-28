@@ -54,8 +54,6 @@
     )
   </insert>
 
-
-
   <!-- 新規コースの登録 -->
   <insert id="insertStudentCourse" parameterType="raisetech.Student.Management.data.StudentCourse">
     INSERT INTO student_course (
@@ -64,5 +62,33 @@
     #{studentId}, #{courseName}, #{startDate}, #{endDate}
     )
   </insert>
+
+  <!-- キーワード検索 -->
+  <select id="searchStudentsByKeyword" parameterType="string" resultType="raisetech.Student.Management.data.Student">
+    SELECT * FROM students
+    WHERE deleted_flag = false
+    AND (
+    full_name LIKE CONCAT('%', #{keyword}, '%') OR
+    furigana LIKE CONCAT('%', #{keyword}, '%') OR
+    nickname LIKE CONCAT('%', #{keyword}, '%') OR
+    email LIKE CONCAT('%', #{keyword}, '%')
+    )
+  </select>
+
+  <!-- 性別で受講生を検索 -->
+  <select id="findStudentsByGender" parameterType="string" resultType="raisetech.Student.Management.data.Student">
+    SELECT * FROM students
+    WHERE gender = #{gender}
+    AND deleted_flag = false
+  </select>
+
+  <!-- コース名で受講生を検索 -->
+  <select id="findStudentsByCourseName" parameterType="string" resultType="raisetech.Student.Management.data.StudentCourse">
+    SELECT s.id AS studentId, s.full_name, c.course_name, c.start_date, c.end_date
+    FROM students s
+    JOIN student_course c ON s.id = c.student_id
+    WHERE c.course_name = #{courseName}
+    AND s.deleted_flag = false
+  </select>
 
 </mapper>
