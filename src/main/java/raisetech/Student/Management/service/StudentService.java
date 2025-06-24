@@ -6,9 +6,10 @@ import org.springframework.transaction.annotation.Transactional; // ← 追加
 import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
 import raisetech.Student.Management.domain.StudentDetail;
-import raisetech.Student.Management.repository.StudentRepository;
+import raisetech.Student.Management.repository.StudentRepository2;
 import raisetech.Student.Management.repository.StudentCourseRepository;
 import raisetech.Student.Management.exception.StudentNotFoundException; // ← 追加
+
 
 import java.util.List;
 import java.util.ArrayList;
@@ -17,18 +18,18 @@ import java.util.ArrayList;
 public class StudentService {
 
   @Autowired
-  private StudentRepository studentRepository;
+  private StudentRepository2 studentRepository2;
 
   @Autowired
   private StudentCourseRepository studentCourseRepository;
 
   public List<Student> searchStudents(String keyword) {
-    return studentRepository.searchStudentsByKeyword(keyword);
+    return studentRepository2.searchStudentsByKeyword(keyword);
   }
 
   // 読み取り：受講生情報を全件取得
   public List<Student> getAllStudents() {
-    return studentRepository.searchAllStudents();
+    return studentRepository2.searchAllStudents();
   }
 
   // 読み取り：受講生のコース情報を全件取得
@@ -43,9 +44,10 @@ public class StudentService {
 
   // 読み取り：受講生詳細情報を取得
   public StudentDetail getStudentDetail(int studentId) {
-    Student student = studentRepository.findStudentById(studentId);
+    Student student = studentRepository2.findStudentById(studentId);
     if (student == null) {
-      throw new StudentNotFoundException("指定されたIDの受講生が見つかりません: " + studentId); // ← ここを変更
+      throw new StudentNotFoundException(
+          "指定されたIDの受講生が見つかりません: " + studentId); // ← ここを変更
     }
 
     List<StudentCourse> studentCourses = new ArrayList<>();
@@ -66,7 +68,7 @@ public class StudentService {
   @Transactional
   public void updateStudentDetails(Student student) {
     int studentId = student.getId(); // IDもオブジェクトから取得
-    studentRepository.updateStudent(studentId, student);
+    studentRepository2.updateStudent(studentId, student);
   }
 
   // 追加する新しいメソッド
@@ -78,7 +80,7 @@ public class StudentService {
     }
 
     // 学生情報を更新
-    studentRepository.updateStudent(id, student);
+    studentRepository2.updateStudent(id, student);
   }
 
   // 書き込み：複数の受講生コース情報を更新
@@ -107,7 +109,7 @@ public class StudentService {
     }
 
     // 1. 受講生を登録
-    studentRepository.insertStudent(student);
+    studentRepository2.insertStudent(student);
 
     // 2. 登録後のIDを取得
     int studentId = student.getId();
@@ -129,10 +131,20 @@ public class StudentService {
 
   // 追加: 性別で受講生検索
   public List<Student> findStudentsByGender(String gender) {
-    return studentRepository.findStudentsByGender(gender);
+    return studentRepository2.findStudentsByGender(gender);
   }
+
   // 追加: コース名で受講生検索
   public List<StudentCourse> findStudentsByCourseName(String courseName) {
-    return studentRepository.findStudentsByCourseName(courseName);
+    return studentRepository2.findStudentsByCourseName(courseName);
+  }
+
+  public List<Student> findAllStudents() {
+    return studentRepository2.findAllStudents();
+  }
+  // StudentService.java
+
+  public List<StudentCourse> findAllStudentCourses() {
+    return studentRepository2.findAllStudentCourses();
   }
 }

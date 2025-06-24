@@ -8,7 +8,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.List;
 import raisetech.Student.Management.domain.StudentDetail;
 import raisetech.Student.Management.data.Student;
-import raisetech.Student.Management.repository.StudentRepository;
+import raisetech.Student.Management.repository.StudentRepository2;
 import raisetech.Student.Management.service.StudentService;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.times;
 public class StudentServiceTest {
 
   @Mock
-  private StudentRepository studentRepository; // モック化
+  private StudentRepository2 studentRepository2; // モック化
 
   @InjectMocks
   private StudentService studentService; // 実際のサービスをインジェクト
@@ -47,7 +47,7 @@ public class StudentServiceTest {
     student2.setAge(28);
 
     // モックリポジトリが返す値を設定
-    when(studentRepository.searchAllStudents()).thenReturn(List.of(student1, student2));
+    when(studentRepository2.searchAllStudents()).thenReturn(List.of(student1, student2));
 
     // メソッド呼び出し
     List<Student> students = studentService.getAllStudents();
@@ -59,7 +59,7 @@ public class StudentServiceTest {
     assertEquals("Jiro Tanaka", students.get(1).getFullName());
 
     // リポジトリが1回呼び出されたことを確認
-    verify(studentRepository, times(1)).searchAllStudents();
+    verify(studentRepository2, times(1)).searchAllStudents();
   }
 
   // registerStudent のテスト
@@ -79,7 +79,7 @@ public class StudentServiceTest {
     studentService.registerNewStudent(studentDetail);
 
     // リポジトリが登録メソッドを1回呼び出すことを確認
-    verify(studentRepository, times(1)).insertStudent(student);
+    verify(studentRepository2, times(1)).insertStudent(student);
   }
 
 
@@ -99,13 +99,13 @@ public class StudentServiceTest {
     updatedStudent.setAge(26);
 
     // モックリポジトリが返す値を設定（学生が存在する場合）
-    when(studentRepository.findStudentById(1)).thenReturn(existingStudent);
+    when(studentRepository2.findStudentById(1)).thenReturn(existingStudent);
 
     // メソッド呼び出し
     studentService.updateStudentDetails(1, updatedStudent, false);
 
     // リポジトリが更新メソッドを1回呼び出すことを確認
-    verify(studentRepository, times(1)).updateStudent(eq(1), eq(updatedStudent));
+    verify(studentRepository2, times(1)).updateStudent(eq(1), eq(updatedStudent));
 
     // 更新後の学生情報を検証
     assertEquals("Taro Yamada Updated", updatedStudent.getFullName());
@@ -127,13 +127,13 @@ public class StudentServiceTest {
     updatedStudent.setAge(25);
 
     // モックリポジトリが返す値を設定（学生が存在する場合）
-    when(studentRepository.findStudentById(1)).thenReturn(existingStudent);
+    when(studentRepository2.findStudentById(1)).thenReturn(existingStudent);
 
     // メソッド呼び出し（キャンセルフラグあり）
     studentService.updateStudentDetails(1, updatedStudent, true);
 
     // リポジトリが更新メソッドを1回呼び出すことを確認
-    verify(studentRepository, times(1)).updateStudent(eq(1), eq(updatedStudent));
+    verify(studentRepository2, times(1)).updateStudent(eq(1), eq(updatedStudent));
 
     // 削除フラグが立っているか確認
     assertTrue(updatedStudent.isDeletedFlag());

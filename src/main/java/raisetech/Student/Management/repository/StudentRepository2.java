@@ -1,20 +1,24 @@
 package raisetech.Student.Management.repository;
 
 import java.util.List;
+
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+
 import raisetech.Student.Management.data.Student;
 import raisetech.Student.Management.data.StudentCourse;
-import org.apache.ibatis.annotations.Options;
 
 /**
  * 受講生情報を扱うリポジトリ
  */
 @Mapper
-public interface StudentRepository {
+public interface StudentRepository2 {
+
+  // --- 元の内容ここから ---
 
   @Select("SELECT * FROM students WHERE deleted_flag = false")
   List<Student> searchAllStudents();
@@ -72,14 +76,12 @@ public interface StudentRepository {
   """)
   List<Student> searchStudentsByKeyword(@Param("keyword") String keyword);
 
-  // 性別検索
   @Select("""
   SELECT * FROM students
   WHERE gender = #{gender} AND deleted_flag = false
   """)
   List<Student> findStudentsByGender(@Param("gender") String gender);
 
-  //コース検索
   @Select("""
   SELECT s.id AS studentId, s.full_name, c.course_name, c.start_date, c.end_date
   FROM students s
@@ -88,4 +90,15 @@ public interface StudentRepository {
   """)
   List<StudentCourse> findStudentsByCourseName(@Param("courseName") String courseName);
 
+  // --- ここから追加したメソッド ---
+  @Select("SELECT * FROM students")
+  List<Student> findAllStudents();
+
+  default void printAllStudents() {
+    List<Student> students = findAllStudents();
+    students.forEach(System.out::println);
+  }
+  // 🔽【新しく追加するコース一覧取得メソッド】
+  @Select("SELECT * FROM student_course")
+  List<StudentCourse> findAllStudentCourses();
 }

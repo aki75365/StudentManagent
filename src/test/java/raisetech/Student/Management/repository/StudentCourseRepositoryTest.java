@@ -20,7 +20,7 @@ class StudentCourseRepositoryTest {
   private StudentCourseRepository studentCourseRepository;
 
   @Autowired
-  private StudentRepository studentRepository;
+  private StudentRepository2 studentRepository2;
 
   @Test
   void testFindStudentCoursesByStudentId() {// 受講生IDを使ってコース情報を取得し、中身の検証を行うテスト
@@ -95,7 +95,7 @@ class StudentCourseRepositoryTest {
   private Student insertDummyStudent() {
     Student student = new Student(0, "テスト太郎", "テストタロウ", "テスティー",
         "test@example.com", "東京", 33, "Male", "備考内容", false);
-    studentRepository.insertStudent(student);
+    studentRepository2.insertStudent(student);
     return student;
   }
 

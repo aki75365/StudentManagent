@@ -12,10 +12,8 @@ import raisetech.Student.Management.service.StudentService;
 import org.springframework.http.ResponseEntity;
 import jakarta.validation.constraints.Size;
 
-// 修正後
 @Controller
 public class StudentViewController {
-
 
   private final StudentService studentService;
 
@@ -24,11 +22,7 @@ public class StudentViewController {
     this.studentService = studentService;
   }
 
-  // 受講生一覧を表示
-  @GetMapping("/studentList")
-  public List<Student> getstudentList() {
-    return studentService.getAllStudents();
-  }
+
 
   // 受講生詳細を表示
   @GetMapping("/{studentId}")
@@ -77,10 +71,7 @@ public class StudentViewController {
     try {
       int id = Integer.parseInt(studentId);
       student.setId(id); // IDをStudentにセット
-
-      // 削除フラグ（deletedFlag）はすでにStudentに含まれていると仮定
       studentService.updateStudentDetails(student);
-
       return ResponseEntity.ok("更新が完了しました");
     } catch (NumberFormatException e) {
       return ResponseEntity.badRequest().body("studentIdは数値で指定してください");
@@ -88,5 +79,15 @@ public class StudentViewController {
       return ResponseEntity.badRequest().body("更新に失敗しました: " + e.getMessage());
     }
   }
-}
 
+  // 全受講生コースリストを取得するエンドポイント
+  @GetMapping("/student_course")
+  public List<StudentCourse> getStudentCourse() {
+    return studentService.findAllStudentCourses();
+  }
+  // ✅ 重複を削除し、受講生一覧を表示
+  @GetMapping("/studentList")
+  public List<Student> getStudentList() {
+    return studentService.findAllStudents();
+  }
+}
