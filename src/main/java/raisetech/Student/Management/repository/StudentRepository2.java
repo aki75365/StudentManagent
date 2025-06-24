@@ -98,6 +98,7 @@ public interface StudentRepository2 {
     List<Student> students = findAllStudents();
     students.forEach(System.out::println);
   }
+
   // 🔽【新しく追加するコース一覧取得メソッド】
   @Select("SELECT * FROM student_course")
   List<StudentCourse> findAllStudentCourses();
