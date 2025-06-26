@@ -93,8 +93,6 @@ class StudentApiControllerTest {
   @Test
   void shouldUpdateStudent() throws Exception {
     Student student = new Student();
-    student.setFullName("更新太郎");
-    student.setGender("male");
     String studentJson = objectMapper.writeValueAsString(student);
 
     mockMvc.perform(put("/api/students/1")
@@ -148,4 +146,16 @@ class StudentApiControllerTest {
             .content(courseJson))
         .andExpect(status().isCreated());
   }
+
+  // ⑤ 性別で受講生検索のテストを追加
+  @Test
+  void shouldReturnStudentsByGender() throws Exception {
+    Mockito.when(studentService.findStudentsByGender("Male"))
+        .thenReturn(List.of(new Student()));
+
+    mockMvc.perform(get("/api/students/gender")
+            .param("gender", "Male"))
+        .andExpect(status().isOk());
+  }
+//コンフリクト解消のためテスト２
 }
