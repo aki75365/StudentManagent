@@ -20,7 +20,7 @@ import raisetech.Student.Management.domain.StudentDetail;
 import raisetech.Student.Management.service.StudentService;
 
 @WebMvcTest(StudentViewController.class)
-public class StudentViewControllerTest {
+public class Student2ViewControllerTest {
 
   @Autowired
   private MockMvc mockMvc;

@@ -19,7 +19,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 
 
-public class StudentServiceTest {
+public class Student2ServiceTest {
 
   @Mock
   private StudentRepository2 studentRepository2; // モック化
