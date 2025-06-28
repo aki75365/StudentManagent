@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class StudentConverterTest {
+public class Student2ConverterTest {
 
   private final StudentConverter converter = new StudentConverter();
 

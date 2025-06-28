@@ -1,5 +1,5 @@
 package raisetech.Student.Management;
-public class StudentCourse {
+public class StudentCourse2 {
   private int id;               // コースID
   private int studentId;         // 受講生ID
   private String courseName;     // コース名
@@ -7,7 +7,7 @@ public class StudentCourse {
   private String endDate;        // 受講終了予定日
 
   // コンストラクタ
-  public StudentCourse(int id, int studentId, String courseName, String startDate, String endDate) {
+  public StudentCourse2(int id, int studentId, String courseName, String startDate, String endDate) {
     this.id = id;
     this.studentId = studentId;
     this.courseName = courseName;
