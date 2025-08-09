@@ -29,7 +29,7 @@ jobs:
     - name: Build with Gradle Wrapper
       run: ./gradlew test
 
-  # Dependency graph submission (無効化したい場合はこのジョブを削除またはコメントアウト
+  # Dependency graph submission (無効化したい場合はこのジョブを削除またはコメントアウト)
   dependency-submission:
     runs-on: ubuntu-latest
     permissions:
