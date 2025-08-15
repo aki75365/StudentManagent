@@ -29,6 +29,7 @@ jobs:
     env:
       SPRING_PROFILES_ACTIVE: test
 
+
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -57,6 +58,7 @@ jobs:
       - name: Build with Gradle Wrapper
         run: ./gradlew test
 //
+
   dependency-submission:
     runs-on: ubuntu-latest
     permissions:
